@@ -1,0 +1,29 @@
+body {
+	background-color: #eee;
+}
+
+#GameGrid {
+    max-width: 850px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin: 0 auto;
+    perspective: 1700px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.card {
+    box-sizing: border-box;
+    margin: 1%;
+    flex: 0 1 18%;
+    height: 0;
+    padding-bottom: 18%;
+    position: relative;
+    transform-style: preserve-3d;
+    border: 1px solid #999;
+    border-radius: 10%;
+    background-color: #fff;
+}
