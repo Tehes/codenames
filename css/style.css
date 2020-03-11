@@ -4,7 +4,7 @@ body {
 }
 
 #GameGrid {
-    max-width: 1020px;
+    max-width: 1100px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -30,6 +30,7 @@ body {
     background-color: #fff;
     text-align: center;
     font-weight: bold;
-    font-size: x-large;
+    font-size: large;
     color: #666;
+    text-transform: uppercase;
 }
