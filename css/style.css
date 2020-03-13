@@ -43,7 +43,7 @@ body {
 	margin: 20px auto;
 	display:grid;
 	grid-template-rows: repeat(5, minmax(auto, 150px));
-	grid-template-columns: repeat(5, 1fr);
+	grid-template-columns: repeat(5, minmax(150px, 1fr));
 	grid-gap: 20px;
 }
 
