@@ -3,39 +3,6 @@ body {
 	font-family: 'Oswald', Arial, Helvetica, sans-serif;
 }
 
-#ffGameGrid {
-    max-width: 1100px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-    margin: 0 auto;
-    perspective: 1700px;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.ffcard {
-    box-sizing: border-box;
-    margin: 1%;
-    flex: 0 1 18%;
-    height: 100%;
-    padding-bottom: 6%;
-    padding-top: 6%;
-    position: relative;
-    transform-style: preserve-3d;
-    border: 2px solid #999;
-    border-radius: 10%;
-    background-color: #fff;
-    text-align: center;
-    font-weight: bold;
-    color: #666;
-    text-transform: uppercase;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 #GameGrid {
 	max-width: 1080px;
 	max-height: 830px;
@@ -47,12 +14,12 @@ body {
 }
 
 .card {
-	border: 2px solid #999;
+    border: 2px solid #999;
     border-radius: 10%;
     background-color: #fff;
     text-align: center;
     font-weight: bold;
-    font-size: 1.7vmin;
+    font-size: 1.7em;
     color: #666;
     text-transform: uppercase;
     overflow: hidden;
@@ -60,18 +27,7 @@ body {
     line-height: 150px;
 }
 
-.blue {
-	background-color: rgb(30,30,255);
-}
-
-.red {
-	background-color: rgb(255,50,50);
-}
-
-.neutral {
-	background-color: rgb(250,200,100);
-}
-
-.black {
-	background-color: rgb(0,0,0);
-}
+.blue {	background-color: rgb(30,30,255); }
+.red {	background-color: rgb(255,50,50); }
+.neutral { background-color: rgb(250,200,100); }
+.black { background-color: rgb(0,0,0); }
