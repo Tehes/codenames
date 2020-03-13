@@ -3,7 +3,7 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-#GameGrid {
+#ffGameGrid {
     max-width: 1100px;
     display: flex;
     flex-direction: row;
@@ -16,7 +16,7 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.card {
+.ffcard {
     box-sizing: border-box;
     margin: 1%;
     flex: 0 1 18%;
@@ -30,7 +30,49 @@ body {
     background-color: #fff;
     text-align: center;
     font-weight: bold;
-    font-size: 1.8vmin;
+    font-size: 1.7vmin;
     color: #666;
     text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#GameGrid {
+	max-width: 1080px;
+	max-height: 830px;
+	margin: 20px auto;
+	display:grid;
+	grid-template-rows: repeat(5, minmax(auto, 150px));
+	grid-template-columns: repeat(5, 1fr);
+	grid-gap: 20px;
+}
+
+.card {
+	border: 2px solid #999;
+    border-radius: 10%;
+    background-color: #fff;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.7vmin;
+    color: #666;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 150px;
+}
+
+.blue {
+	background-color: rgb(30,30,255);
+}
+
+.red {
+	background-color: rgb(255,50,50);
+}
+
+.neutral {
+	background-color: rgb(250,200,100);
+}
+
+.black {
+	background-color: rgb(0,0,0);
 }
