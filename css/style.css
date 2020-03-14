@@ -14,7 +14,7 @@ body {
 }
 
 .card {
-    border: 2px solid #999;
+    /* border: 1px solid #ccc; */
     border-radius: 10%;
     background-color: #fff;
     text-align: center;
@@ -25,6 +25,8 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 150px;
+    box-shadow: 5px 5px 5px #ccc;
+    transition: all 0.5s;
 }
 
 .blue {	background-color: rgb(30,160,255); }
