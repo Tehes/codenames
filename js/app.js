@@ -21,7 +21,7 @@ function shuffle(array) {
 
 var colors = [];
 
-for (var i = 0; i < 8; i++) {
+for (var i = 0; i < 7; i++) {
 	colors.push("blue");
 }
 for (var i = 0; i < 7; i++) {
@@ -32,11 +32,34 @@ for (var i = 0; i < 9; i++) {
 }
 colors.push("black");
 
+var coinToss = Math.round(Math.random());
+var startingTeam = (coinToss === 0) ? "blue" : "red"; 
+colors.push(startingTeam);
+
 shuffle(colors);
+
+/*-----------------------------------------------*/
+
+var words = ["Absatz", "Abzug", "Ader", "Akt", "Amerikaner", "Anhänger", "Auflauf", "Ball", "Band", "Bank", "Bar", "Bau", "Becken", "Bein", "Berliner", "Bett", "Birne", "Blase", "Blatt", "Block", "Blüte", "Bogen", "Boxen", "Bulle", "Drache", "Druck", "Ente", "Erde", "Fach", "Fahne", "Fall","Fassung", "Feder", "Flügel", "Frankfurter", "Futter", "Gang", "Gericht", "Glas", "Golf", "Grund", "Hahn", "Hamburger", "Heide", "Hering", "Horn", "Kapelle", "Karte", "Kater", "Klasse", "Knete", "Koks", "Krebs", "Kreuz", "Krone", "Laster", "Läufer", "Leiter", "Lösung", "Maß", "Mast", "Maus", "Menü", "Messe", "Moos", "Mühle", "Mutter", "Nagel", "Netz", "Niete", "Note", "Pass", "Pfeife", "Pflaster", "Pickel", "Platte", "Pony", "Preis", "Presse", "Pumpe", "Rahmen", "Rasen", "Reich", "Rock", "Rolle", "Satz", "Scheibe", "Schein", "Schimmel", "Schirm", "Schiene", "Schild", "Schlange", "Schloss", "Scholle", "Schuppen", "Schwester", "Sirene", "Spange", "Speicher", "Spiegel", "Spion", "Sprung", "Stab", "Stamm", "Stand", "Stärke", "Steuer", "Stift", "Stock", "Stoff", "Stollen", "Strauss", "Strom", "Strudel", "Stuhl", "Tafel", "Tau", "Toast", "Ton", "Umschlag", "Umzug", "Veilchen", "Verband", "Wanze", "Wirbel", "Wirtschaft", "Wurf",  "Zelle", "Zopf", "Zug", "Zweig", "Zylinder",];
+
+shuffle(words);
+
+/*-----------------------------------------------*/
 
 var cards = document.querySelectorAll(".card");
 
 for (var i = 0; i < cards.length; i++) {
 	cards[i].dataset.color = colors[i];
-	cards[i].addEventListener("click", function() { this.classList.add(this.dataset.color); }, false)
+	cards[i].dataset.word = words[i];
+	cards[i].textContent = words[i];
 }
+
+/*-----------------------------------------------*/
+
+var GameGrid = document.querySelector("#GameGrid");
+GameGrid.addEventListener("click", function() { 
+		if (event.target.dataset.color) {
+			event.target.classList.add(event.target.dataset.color); 
+			event.target.textContent = "";
+		}
+	}, false)
