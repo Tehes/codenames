@@ -4,12 +4,12 @@ body {
 
 #GameGrid {
 	background-color: #000;
-	max-width: 480px;
-	max-height: 480px;
+	width: 100vmin;
+	height: 100vmin;
 	margin: 20px auto;
 	display:grid;
-	grid-template-rows: repeat(5, minmax(auto, 95px));
-	grid-template-columns: repeat(5, minmax(auto, 95px));
+	grid-template-rows: repeat(5, 1fr);
+	grid-template-columns: repeat(5, 1fr);
 	grid-gap: 1px;
 	position: relative;
 	padding: 1px;
