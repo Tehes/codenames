@@ -10,17 +10,13 @@ body {
 	display:grid;
 	grid-template-rows: repeat(5, 1fr);
 	grid-template-columns: repeat(5, 1fr);
-	grid-gap: 1px;
-	position: relative;
-	padding: 1px;
+	grid-gap: 6px;
+	padding: 6px;
 }
 
 .card {
     border-radius: 10px;
-    border: 2px solid #000;
     background-color: #fff;
-    text-align: center;
-    line-height: 150px;
 }
 
 .blue {	background-color: rgb(30,160,255); }
