@@ -1,0 +1,29 @@
+body {
+	background-color: #eee;
+}
+
+#GameGrid {
+	background-color: #000;
+	max-width: 754px;
+	max-height: 754px;
+	margin: 20px auto;
+	display:grid;
+	grid-template-rows: repeat(5, minmax(auto, 150px));
+	grid-template-columns: repeat(5, minmax(auto, 150px));
+	grid-gap: 1px;
+	position: relative;
+	padding: 1px;
+}
+
+.card {
+    border-radius: 10px;
+    border: 2px solid #000;
+    background-color: #fff;
+    text-align: center;
+    line-height: 150px;
+}
+
+.blue {	background-color: rgb(30,160,255); }
+.red {	background-color: rgb(255,50,50); }
+.neutral { background-color: rgb(250,200,100); }
+.black { background-color: rgb(0,0,0); }

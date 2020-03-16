@@ -47,13 +47,14 @@ for (var i = 0; i < colors.length; i++) {
 }
 
 var qrcode = new QRCode(document.querySelector("#qrcode"), {
-    text: "http://tehes.github.com/codenames/index.html#"+hash,
+    text: "http://tehes.github.com/codenames/spymaster.html#"+hash,
     width: 300,
     height: 300,
     colorDark : "#333",
     colorLight : "#FFF",
     correctLevel : QRCode.CorrectLevel.H
 });
+console.log(hash);
 
 /*-----------------------------------------------*/
 
