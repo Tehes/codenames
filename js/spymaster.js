@@ -9,5 +9,5 @@ var colors = ["blue", "red", "neutral", "black"];
 var cards = document.querySelectorAll(".card");
 
 for (var i = 0; i < cards.length; i++) {
-	cards[i].classList.add(colors[colorIndex[i]]);
+    cards[i].classList.add(colors[colorIndex[i]]);
 }
