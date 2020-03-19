@@ -14,13 +14,14 @@ body {
 }
 
 #GameGrid {
-    max-width: 1080px;
-    max-height: 830px;
-    margin: 20px auto;
+    max-width: 100vmin;
+    max-height: 100vmin;
+    margin: 0 auto;
+    padding: 20px;
     display: grid;
-    grid-template-rows: repeat(5, minmax(auto, 150px));
-    grid-template-columns: repeat(5, minmax(150px, 1fr));
-    grid-gap: 20px;
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 2%;
     position: relative;
 }
 
@@ -30,14 +31,19 @@ body {
     background-color: #fff;
     text-align: center;
     font-weight: bold;
-    font-size: 1.7em;
+    font-size: 3vmin;
     color: #666;
     text-transform: uppercase;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 150px;
+    line-height: 15vmin;
     box-shadow: 5px 5px 5px #ccc;
-    transition: all 0.5s;
+    transition: background-color 0.5s;
+    cursor: grab;
+}
+
+.card:active {
+    cursor: grabbing;
 }
 
 .blue {
