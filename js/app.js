@@ -77,6 +77,10 @@ GameGrid.addEventListener("click", function() {
         event.target.classList.add(event.target.dataset.color);
         event.target.textContent = "";
     }
+    var blueCounter = document.querySelector(".blue span");
+    var redCounter = document.querySelector(".red span");
+    blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
+    redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
 }, false);
 
 var modal = document.querySelector("#modal");
