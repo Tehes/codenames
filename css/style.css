@@ -65,6 +65,7 @@ header > div {
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 15vmin;
+    height: 15vmin;
     box-shadow: 5px 5px 5px #ccc;
     transition: background-color 0.5s;
     cursor: grab;
