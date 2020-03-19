@@ -1,7 +1,7 @@
 var hash = location.hash.substr(1);
 
-/* for testing purposes
-var hash = "2020220110212200121032011"; */
+// for testing purposes
+// var hash = "2020220110212200121032011";
 
 var colorIndex = hash.split("");
 
