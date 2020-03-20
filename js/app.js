@@ -22,9 +22,9 @@ function shuffle(array) {
 
 var colors = [];
 
-for (var i = 0; i < 7; i++) { colors.push("blue"); }
-for (var i = 0; i < 7; i++) { colors.push("red"); }
-for (var i = 0; i < 9; i++) { colors.push("neutral"); }
+for (var i = 0; i < 8; i++) { colors.push("blue"); }
+for (var i = 0; i < 8; i++) { colors.push("red"); }
+for (var i = 0; i < 7; i++) { colors.push("neutral"); }
 colors.push("black");
 
 var coinToss = Math.round(Math.random());

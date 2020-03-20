@@ -1,5 +1,15 @@
 body {
     background-color: #eee;
+    font-family: 'Oswald', Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    margin-top: 2vmin;
+    display: block;
+    width: 100vw;
+    font-size: 6vmin;
+    font-weight: bold;
+    text-align: center;
 }
 
 #GameGrid {
@@ -7,7 +17,7 @@ body {
     background-color: #000;
     width: 100vmin;
     height: 100vmin;
-    margin: 20px auto;
+    margin: 4vmin auto;
     display: grid;
     grid-template-rows: repeat(5, 1fr);
     grid-template-columns: repeat(5, 1fr);
