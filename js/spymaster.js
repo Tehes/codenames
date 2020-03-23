@@ -1,8 +1,8 @@
 function makeBoard() {
-    // var hash = location.hash.substr(1);
+    var hash = location.hash.substr(1);
 
     // for testing purposes
-    var hash = "0002001101231010201212122";
+    // var hash = "0002001101231010201212122";
 
     var colorIndex = hash.split("");
 
