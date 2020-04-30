@@ -113,9 +113,9 @@ function play(blueCount,redCount) {
     redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
     
     //check for win/lose
-    if ( event.target.dataset.color === "black" ) { console.log("Game ended") }
-    if ( blueCount === document.querySelectorAll("#GameGrid .blue").length ) { console.log("blue wins") }
-    if ( redCount === document.querySelectorAll("#GameGrid .red").length ) { console.log("red wins") }
+    if ( event.target.dataset.color === "black" ) { console.log("Game ended"); }
+    if ( blueCount === document.querySelectorAll("#GameGrid .blue").length ) { console.log("blue wins"); }
+    if ( redCount === document.querySelectorAll("#GameGrid .red").length ) { console.log("red wins"); }
     
 }
 
