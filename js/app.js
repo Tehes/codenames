@@ -43,7 +43,8 @@ var codenames = {
         console.log(this.words.length + " Wörter");
         console.log("Hash = " + this.hash);
 
-        this.GameGrid.addEventListener("click", this.play.bind(this), false);
+        this.playHandler = this.play.bind(this);
+        this.GameGrid.addEventListener("click", this.playHandler, false);
     },
     setColors: function() {
         var colors, i;
@@ -132,6 +133,7 @@ var codenames = {
             this.cards[i].classList.add(this.cards[i].dataset.color);
             this.cards[i].textContent = this.cards[i].dataset.word;
         }
+        this.GameGrid.removeEventListener("click", this.playHandler);
     }
 
 };
