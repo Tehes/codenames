@@ -34,7 +34,7 @@ shuffle(words);
 makeQRCode(hash);
 setCards(colors, words);
 
-GameGrid.addEventListener("click", function() { play(blueCount,redCount) }, false);
+GameGrid.addEventListener("click", function() { play(blueCount,redCount); }, false);
 
 console.log(words.length + " Wörter");
 console.log("Hash = " + hash);
@@ -42,17 +42,17 @@ console.log("Hash = " + hash);
 }
 
 function setColors(startingTeam) {
+    var colors, i;
+	 colors = [];
 
-	var colors = [];
-	
-	for (var i = 0; i < 8; i++) { colors.push("blue"); }
-	for (var i = 0; i < 8; i++) { colors.push("red"); }
-	for (var i = 0; i < 7; i++) { colors.push("neutral"); }
+	for (i = 0; i < 8; i++) { colors.push("blue"); }
+	for (i = 0; i < 8; i++) { colors.push("red"); }
+	for (i = 0; i < 7; i++) { colors.push("neutral"); }
 	colors.push("black");
 	colors.push(startingTeam);
-	
+
 	shuffle(colors);
-	
+
 	return colors;
 
 }
@@ -66,7 +66,7 @@ function makeHash(colors) {
 	    if (colors[i] === "neutral") { hash += "2"; }
 	    if (colors[i] === "black") { hash += "3"; }
 	}
-	
+
 	return hash;
 }
 
@@ -80,7 +80,7 @@ function makeQRCode(hash) {
 	    colorLight: "#FFF",
 	    correctLevel: QRCode.CorrectLevel.H
 	});
-	
+
 	var modal = document.querySelector("#modal");
 	modal.addEventListener("click", function() {
     	this.className = "invisible";
@@ -90,7 +90,7 @@ function makeQRCode(hash) {
 function setCards(colors, words) {
 
 	var cards = document.querySelectorAll(".card");
-	
+
 	for (var i = 0; i < cards.length; i++) {
 	    cards[i].dataset.color = colors[i];
 	    cards[i].dataset.word = words[i];
@@ -105,18 +105,18 @@ function play(blueCount,redCount) {
         event.target.classList.add(event.target.dataset.color);
         event.target.textContent = "";
     }
-    
+
     // increment teams count
     var blueCounter = document.querySelector(".blue span");
     var redCounter = document.querySelector(".red span");
     blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
     redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
-    
+
     //check for win/lose
     if ( event.target.dataset.color === "black" ) { console.log("Game ended"); }
     if ( blueCount === document.querySelectorAll("#GameGrid .blue").length ) { console.log("blue wins"); }
     if ( redCount === document.querySelectorAll("#GameGrid .red").length ) { console.log("red wins"); }
-    
+
 }
 
 init();
