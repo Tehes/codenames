@@ -33,6 +33,10 @@ var codenames = {
         this.redCount = (this.startingTeam === "red") ? 9 : 8;
 
         shuffle(this.words);
+        if (this.playedWords) {
+            this.words = this.words.concat(this.playedWords);
+            this.playedWords = [];
+        }
 
         this.colors = this.setColors();
         this.setCards();
@@ -81,9 +85,9 @@ var codenames = {
     	return hash;
     },
     makeQRCode: function() {
-        var qrcode, modal;
+        var modal;
 
-        qrcode = new QRCode(document.querySelector("#qrcode"), {
+        this.qrcode = new QRCode(document.querySelector("#qrcode"), {
     	    text: "http://tehes.github.com/codenames/spymaster.html#" + this.hash,
     	    width: 300,
     	    height: 300,
@@ -94,7 +98,7 @@ var codenames = {
 
     	modal = document.querySelector("#modal");
     	modal.addEventListener("click", function() {
-        	this.className = "invisible";
+            this.className = "invisible";
     	}, false);
     },
     play: function() {
@@ -110,7 +114,7 @@ var codenames = {
         blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
         redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
 
-        setTimeout(this.isFinished.bind(this), 500);
+        setTimeout(this.isFinished.bind(this), 0);
     },
     isFinished: function() {
         if ( document.querySelectorAll("#GameGrid .black").length === 1) {
@@ -128,12 +132,28 @@ var codenames = {
     },
     solve: function() {
         var i;
+        this.GameGrid.removeEventListener("click", this.playHandler);
 
         for (i = 0; i < this.cards.length; i++) {
             this.cards[i].classList.add(this.cards[i].dataset.color);
             this.cards[i].textContent = this.cards[i].dataset.word;
         }
-        this.GameGrid.removeEventListener("click", this.playHandler);
+    },
+    reset: function() {
+        var i;
+
+        for (i = 0; i < this.cards.length; i++) {
+            this.cards[i].classList.remove(this.cards[i].dataset.color);
+        }
+
+        var blueCounter = document.querySelector(".blue span");
+        var redCounter = document.querySelector(".red span");
+        blueCounter.textContent = 0;
+        redCounter.textContent = 0;
+
+        this.playedWords = this.words.splice(0,25);
+
+        this.init();
     }
 
 };
