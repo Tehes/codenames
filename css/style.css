@@ -32,6 +32,7 @@ header > div {
      font-size: 2em;
      flex: 1;
      color: #CCC;
+     cursor: grab;
  }
 
  header .teams {

@@ -26,6 +26,7 @@ var codenames = {
 
     cards: document.querySelectorAll(".card"),
     GameGrid: document.querySelector("#GameGrid"),
+    Logo: document.querySelector("h1"),
 
     init: function() {
         this.startingTeam = (Math.round(Math.random()) === 0) ? "blue" : "red";
@@ -43,6 +44,9 @@ var codenames = {
 
         this.hash = this.generateHash();
         this.makeQRCode();
+
+        this.resetHandler = this.reset.bind(this);
+        this.Logo.addEventListener("click", this.resetHandler, false);
 
         console.log(this.words.length + " Wörter");
         console.log("Hash = " + this.hash);
@@ -85,7 +89,15 @@ var codenames = {
     	return hash;
     },
     makeQRCode: function() {
-        var modal;
+        var modal, qr;
+
+        modal = document.querySelector("#modal");
+        modal.className = "";
+
+        qr = document.createElement("div");
+
+        qr.id = "qrcode";
+        modal.appendChild(qr);
 
         this.qrcode = new QRCode(document.querySelector("#qrcode"), {
     	    text: "http://tehes.github.com/codenames/spymaster.html#" + this.hash,
@@ -96,10 +108,14 @@ var codenames = {
     	    correctLevel: QRCode.CorrectLevel.H
     	});
 
-    	modal = document.querySelector("#modal");
-    	modal.addEventListener("click", function() {
-            this.className = "invisible";
-    	}, false);
+    	modal.addEventListener("click", deleteQR, false);
+
+        function deleteQR() {
+            var modal = document.querySelector("#modal");
+            modal.className = "invisible";
+            document.querySelector("#qrcode").remove();
+            modal.removeEventListener("click", deleteQR, false);
+        }
     },
     play: function() {
         // select card
@@ -114,7 +130,7 @@ var codenames = {
         blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
         redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
 
-        setTimeout(this.isFinished.bind(this), 0);
+        setTimeout(this.isFinished.bind(this), 500);
     },
     isFinished: function() {
         if ( document.querySelectorAll("#GameGrid .black").length === 1) {
@@ -152,6 +168,9 @@ var codenames = {
         redCounter.textContent = 0;
 
         this.playedWords = this.words.splice(0,25);
+        
+        this.Logo.removeEventListener("click", this.resetHandler, false);
+        this.GameGrid.removeEventListener("click", this.playHandler);
 
         this.init();
     }
