@@ -33,6 +33,8 @@ var codenames = {
         this.blueCount = (this.startingTeam === "blue") ? 9 : 8;
         this.redCount = (this.startingTeam === "red") ? 9 : 8;
 
+        this.solved = false;
+
         shuffle(this.words);
         if (this.playedWords) {
             this.words = this.words.concat(this.playedWords);
@@ -52,7 +54,9 @@ var codenames = {
         console.log("Hash = " + this.hash);
 
         this.playHandler = this.play.bind(this);
+        this.finishedHandler = this.isFinished.bind(this);
         this.GameGrid.addEventListener("click", this.playHandler, false);
+        this.GameGrid.addEventListener("transitionend", this.finishedHandler, false);
     },
     setColors: function() {
         var colors, i;
@@ -118,6 +122,12 @@ var codenames = {
         }
     },
     play: function() {
+        //reset if finished
+        if (this.solved === true) {
+            this.reset();
+            return;
+        }
+
         // select card
         if (event.target.dataset.color) {
             event.target.classList.add(event.target.dataset.color);
@@ -129,8 +139,6 @@ var codenames = {
         var redCounter = document.querySelector(".red span");
         blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
         redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
-
-        setTimeout(this.isFinished.bind(this), 500);
     },
     isFinished: function() {
         if ( document.querySelectorAll("#GameGrid .black").length === 1) {
@@ -148,15 +156,23 @@ var codenames = {
     },
     solve: function() {
         var i;
-        this.GameGrid.removeEventListener("click", this.playHandler);
+
+        this.GameGrid.removeEventListener("transitionend", this.finishedHandler, false);
 
         for (i = 0; i < this.cards.length; i++) {
             this.cards[i].classList.add(this.cards[i].dataset.color);
             this.cards[i].textContent = this.cards[i].dataset.word;
         }
+        this.solved = true;
     },
     reset: function() {
         var i;
+
+        if (this.solved === false) {
+            this.GameGrid.removeEventListener("transitionend", this.finishedHandler, false);
+        }
+        this.Logo.removeEventListener("click", this.resetHandler, false);
+        this.GameGrid.removeEventListener("click", this.playHandler);
 
         for (i = 0; i < this.cards.length; i++) {
             this.cards[i].classList.remove(this.cards[i].dataset.color);
@@ -168,9 +184,6 @@ var codenames = {
         redCounter.textContent = 0;
 
         this.playedWords = this.words.splice(0,25);
-        
-        this.Logo.removeEventListener("click", this.resetHandler, false);
-        this.GameGrid.removeEventListener("click", this.playHandler);
 
         this.init();
     }
