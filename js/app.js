@@ -1,64 +1,70 @@
-function shuffle(array) {
-    var currentIndex = array.length,
-        temporaryValue, randomIndex;
+codenames = function() {
 
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
+    /* -------------------- Helper functions -------------------- */
 
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
+    function shuffle(array) {
+        var currentIndex = array.length,
+            temporaryValue, randomIndex;
 
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
 
-    return array;
-}
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
 
-/*-----------------------------------------------*/
-
-var codenames = {
-
-    words: ["Matte", "Essen", "Blüte", "Kerze", "Bein", "Tempo", "Quartett", "Siegel", "Torte", "Kater", " Berliner", "Loch Ness", "Bart", "Blatt", "Kanal", "Europa", "Peking", "Feder", "Börse", "Birne", "Erde", "Wurm", "Kasino", "Hamburger", "Drache", "Auto", "Zitrone", "Auflauf", "Bund", "Watt", "Mandel", "Läufer", "Film", "Riemen", "Morgenstern", "Weide", "Gang", "Horst", "Rom", "Shakespeare", "Verband", "Niete", "Vorsatz", "Hering", "Strom", "Stift", "Hut", "Feuer", "Lakritze", "Mutter", "Loge", "Oper", "Hollywood", "Ton", "Rock", "Lippe", "Kraft", "Tafel", "Kippe", "Adler", "Strasse", "Pistole", "Boot", "Wanze", "Prinzessin", "Millionär", "Hund", "Jet", "Botschaft", "Schuh", "Krankheit", "Note", "Brötchen", "Stuhl", "Kiwi", "Gold", "Königin", "China", "Flügel", "Funken", "Ladung", "Australien", "Mangel", "Muschel", "Rute", "Quelle", "Rost", "Bock", "Ägypten", "Bindung", "Fisch", "Soldat", "Mittel", "Skelett", "Seite", "Flöte", "Zeit", "Dinosaurier", "Pferd", "Fackel", "Gabel", "Strudel", "Alpen", "König", "Lehrer", "Daumen", "Schnee", "Pilot", "Tag", "Ring", "Stern", "Schiff", "Flasche", "Glas", "Deutschland", "Flur", "Schuppen", "Tor", "Pension", "Nadel", "Schirm", "Tanz", "Linie", "Steuer", "Karte", "Korb", "Horn", "Löwe", "Fleck", "Spiel", "Herz", "Schnur", "Orange", "Himalaja", "Raute", "Bett", "Anwalt", "Känguruh", "Grad", "Futter", "Taucher", "Melone", "Strauss", "Koks", "Römer", "Brand", "Gut", "Stamm", "Hotel", "Gras", "Uhr", "Tisch", "Fessel", "Schale", "Mund", "Nagel", "Dame", "Drucker", "Messe", "Ketchup", "Geschirr", "Theater", "Osten", "Tod", "Fuss", "Blau", "Turm", "Chor", "Rolle", "Bombe", "Bergsteiger", "Polizei", "Leben", "Erika", "Taste", "Stock", "Auge", "Brücke", "Verein", "Frankreich", "Mine", "Schotten", "Oktopus", "Gürtel", "Zwerg", "Olymp", "Krankenhaus", "Strand", "Riese", "Stadion", "Wal", "Ball", "Kreis", "Toast", "Bremse", "Limousine", "Gesicht", "Katze", "Bär", "Ritter"],
-
-    cards: document.querySelectorAll(".card"),
-    GameGrid: document.querySelector("#GameGrid"),
-    Logo: document.querySelector("h1"),
-
-    init: function() {
-        this.startingTeam = (Math.round(Math.random()) === 0) ? "blue" : "red";
-        this.blueCount = (this.startingTeam === "blue") ? 9 : 8;
-        this.redCount = (this.startingTeam === "red") ? 9 : 8;
-
-        this.solved = false;
-
-        shuffle(this.words);
-        if (this.playedWords) {
-            this.words = this.words.concat(this.playedWords);
-            this.playedWords = [];
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
         }
 
-        this.colors = this.setColors();
-        this.setCards();
+        return array;
+    }
 
-        this.hash = this.generateHash();
-        this.makeQRCode();
+    /* -------------------- Variables -------------------- */
 
-        this.resetHandler = this.reset.bind(this);
-        this.Logo.addEventListener("click", this.resetHandler, false);
+    var words = ["Matte", "Essen", "Blüte", "Kerze", "Bein", "Tempo", "Quartett", "Siegel", "Torte", "Kater", " Berliner", "Loch Ness", "Bart", "Blatt", "Kanal", "Europa", "Peking", "Feder", "Börse", "Birne", "Erde", "Wurm", "Kasino", "Hamburger", "Drache", "Auto", "Zitrone", "Auflauf", "Bund", "Watt", "Mandel", "Läufer", "Film", "Riemen", "Morgenstern", "Weide", "Gang", "Horst", "Rom", "Shakespeare", "Verband", "Niete", "Vorsatz", "Hering", "Strom", "Stift", "Hut", "Feuer", "Lakritze", "Mutter", "Loge", "Oper", "Hollywood", "Ton", "Rock", "Lippe", "Kraft", "Tafel", "Kippe", "Adler", "Strasse", "Pistole", "Boot", "Wanze", "Prinzessin", "Millionär", "Hund", "Jet", "Botschaft", "Schuh", "Krankheit", "Note", "Brötchen", "Stuhl", "Kiwi", "Gold", "Königin", "China", "Flügel", "Funken", "Ladung", "Australien", "Mangel", "Muschel", "Rute", "Quelle", "Rost", "Bock", "Ägypten", "Bindung", "Fisch", "Soldat", "Mittel", "Skelett", "Seite", "Flöte", "Zeit", "Dinosaurier", "Pferd", "Fackel", "Gabel", "Strudel", "Alpen", "König", "Lehrer", "Daumen", "Schnee", "Pilot", "Tag", "Ring", "Stern", "Schiff", "Flasche", "Glas", "Deutschland", "Flur", "Schuppen", "Tor", "Pension", "Nadel", "Schirm", "Tanz", "Linie", "Steuer", "Karte", "Korb", "Horn", "Löwe", "Fleck", "Spiel", "Herz", "Schnur", "Orange", "Himalaja", "Raute", "Bett", "Anwalt", "Känguruh", "Grad", "Futter", "Taucher", "Melone", "Strauss", "Koks", "Römer", "Brand", "Gut", "Stamm", "Hotel", "Gras", "Uhr", "Tisch", "Fessel", "Schale", "Mund", "Nagel", "Dame", "Drucker", "Messe", "Ketchup", "Geschirr", "Theater", "Osten", "Tod", "Fuss", "Blau", "Turm", "Chor", "Rolle", "Bombe", "Bergsteiger", "Polizei", "Leben", "Erika", "Taste", "Stock", "Auge", "Brücke", "Verein", "Frankreich", "Mine", "Schotten", "Oktopus", "Gürtel", "Zwerg", "Olymp", "Krankenhaus", "Strand", "Riese", "Stadion", "Wal", "Ball", "Kreis", "Toast", "Bremse", "Limousine", "Gesicht", "Katze", "Bär", "Ritter"];
 
-        console.log(this.words.length + " Wörter");
-        console.log("Hash = " + this.hash);
+    var logo = document.querySelector("h1");
+    var gameGrid =  document.querySelector("#GameGrid");
+    var cards = document.querySelectorAll(".card");
+    var blueCounter = document.querySelector(".blue span");
+    var redCounter = document.querySelector(".red span");
 
-        this.playHandler = this.play.bind(this);
-        this.finishedHandler = this.isFinished.bind(this);
-        this.GameGrid.addEventListener("click", this.playHandler, false);
-        this.GameGrid.addEventListener("transitionend", this.finishedHandler, false);
-    },
-    setColors: function() {
+    var startingTeam, blueCount, redCount, solved, playedWords, colors, hash;
+
+    /* -------------------- Functions -------------------- */
+
+    function init() {
+        startingTeam = (Math.round(Math.random()) === 0) ? "blue" : "red";
+        blueCount = (startingTeam === "blue") ? 9 : 8;
+        redCount = (startingTeam === "red") ? 9 : 8;
+
+        solved = false;
+
+        shuffle(words);
+        if (playedWords) {
+            words = words.concat(playedWords);
+            playedWords = [];
+        }
+
+        colors = setColors();
+        setCards();
+
+        hash = generateHash();
+        makeQRCode();
+
+        logo.addEventListener("click", reset, false);
+
+        console.log(words.length + " Wörter");
+        console.log("Hash = " + hash);
+
+        gameGrid.addEventListener("click", play, false);
+        gameGrid.addEventListener("transitionend", isFinished, false);
+    }
+
+    function setColors() {
         var colors, i;
     	 colors = [];
 
@@ -66,33 +72,36 @@ var codenames = {
     	for (i = 0; i < 8; i++) { colors.push("red"); }
     	for (i = 0; i < 7; i++) { colors.push("neutral"); }
     	colors.push("black");
-    	colors.push(this.startingTeam);
+    	colors.push(startingTeam);
 
     	shuffle(colors);
 
     	return colors;
-    },
-    setCards: function() {
-    	for (var i = 0; i < this.cards.length; i++) {
-    	    this.cards[i].dataset.color = this.colors[i];
-    	    this.cards[i].dataset.word = this.words[i];
-    	    this.cards[i].textContent = this.words[i];
+    }
+
+    function setCards() {
+    	for (var i = 0; i < cards.length; i++) {
+    	    cards[i].dataset.color = colors[i];
+    	    cards[i].dataset.word = words[i];
+    	    cards[i].textContent = words[i];
     	}
-    },
-    generateHash: function() {
+    }
+
+    function generateHash() {
         var hash, i;
 
         hash = "";
-    	for (i = 0; i < this.colors.length; i++) {
-    	    if (this.colors[i] === "blue") { hash += "0"; }
-    	    if (this.colors[i] === "red") { hash += "1"; }
-    	    if (this.colors[i] === "neutral") { hash += "2"; }
-    	    if (this.colors[i] === "black") { hash += "3"; }
+    	for (i = 0; i < colors.length; i++) {
+    	    if (colors[i] === "blue") { hash += "0"; }
+    	    if (colors[i] === "red") { hash += "1"; }
+    	    if (colors[i] === "neutral") { hash += "2"; }
+    	    if (colors[i] === "black") { hash += "3"; }
     	}
 
     	return hash;
-    },
-    makeQRCode: function() {
+    }
+
+    function makeQRCode() {
         var modal, qr;
 
         modal = document.querySelector("#modal");
@@ -103,8 +112,8 @@ var codenames = {
         qr.id = "qrcode";
         modal.appendChild(qr);
 
-        this.qrcode = new QRCode(document.querySelector("#qrcode"), {
-    	    text: "http://tehes.github.com/codenames/spymaster.html#" + this.hash,
+        qrcode = new QRCode(document.querySelector("#qrcode"), {
+    	    text: "http://tehes.github.com/codenames/spymaster.html#" + hash,
     	    width: 300,
     	    height: 300,
     	    colorDark: "#333",
@@ -120,11 +129,12 @@ var codenames = {
             document.querySelector("#qrcode").remove();
             modal.removeEventListener("click", deleteQR, false);
         }
-    },
-    play: function() {
+    }
+
+    function play() {
         //reset if finished
-        if (this.solved === true) {
-            this.reset();
+        if (solved === true) {
+            reset();
             return;
         }
 
@@ -135,59 +145,63 @@ var codenames = {
         }
 
         // increment teams count
-        var blueCounter = document.querySelector(".blue span");
-        var redCounter = document.querySelector(".red span");
         blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
         redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
-    },
-    isFinished: function() {
+    }
+
+    function isFinished() {
         if ( document.querySelectorAll("#GameGrid .black").length === 1) {
             alert("Spiel beendet");
-            this.solve();
+            solve();
         }
-        else if ( this.blueCount === document.querySelectorAll("#GameGrid .blue").length ) {
+        else if ( blueCount === document.querySelectorAll("#GameGrid .blue").length ) {
             alert("Blau gewinnt");
-            this.solve();
+            solve();
         }
-        else if ( this.redCount === document.querySelectorAll("#GameGrid .red").length ) {
+        else if ( redCount === document.querySelectorAll("#GameGrid .red").length ) {
             alert("Rot gewinnt");
-            this.solve();
+            solve();
         }
-    },
-    solve: function() {
+    }
+
+    function solve() {
         var i;
 
-        this.GameGrid.removeEventListener("transitionend", this.finishedHandler, false);
+        gameGrid.removeEventListener("transitionend", isFinished, false);
 
-        for (i = 0; i < this.cards.length; i++) {
-            this.cards[i].classList.add(this.cards[i].dataset.color);
-            this.cards[i].textContent = this.cards[i].dataset.word;
+        for (i = 0; i < cards.length; i++) {
+            cards[i].classList.add(cards[i].dataset.color);
+            cards[i].textContent = cards[i].dataset.word;
         }
-        this.solved = true;
-    },
-    reset: function() {
+        solved = true;
+    }
+
+    function reset() {
         var i;
 
-        if (this.solved === false) {
-            this.GameGrid.removeEventListener("transitionend", this.finishedHandler, false);
+        if (solved === false) {
+            gameGrid.removeEventListener("transitionend", isFinished, false);
         }
-        this.Logo.removeEventListener("click", this.resetHandler, false);
-        this.GameGrid.removeEventListener("click", this.playHandler);
+        logo.removeEventListener("click", reset, false);
+        gameGrid.removeEventListener("click", play);
 
-        for (i = 0; i < this.cards.length; i++) {
-            this.cards[i].classList.remove(this.cards[i].dataset.color);
+        for (i = 0; i < cards.length; i++) {
+            cards[i].classList.remove(cards[i].dataset.color);
         }
 
-        var blueCounter = document.querySelector(".blue span");
-        var redCounter = document.querySelector(".red span");
         blueCounter.textContent = 0;
         redCounter.textContent = 0;
 
-        this.playedWords = this.words.splice(0,25);
+        playedWords = words.splice(0,25);
 
-        this.init();
+        init();
     }
 
-};
+    /* -------------------- Public -------------------- */
+    return {
+		init:init,
+		solve:solve
+	};
+}();
 
 codenames.init();
