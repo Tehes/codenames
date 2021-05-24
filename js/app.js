@@ -113,7 +113,7 @@ codenames = function() {
         modal.appendChild(qr);
 
         qrcode = new QRCode(document.querySelector("#qrcode"), {
-    	    text: "http://tehes.github.com/codenames/spymaster.html#" + hash,
+    	    text: "http://tehes.github.io/codenames/spymaster.html#" + hash,
     	    width: 300,
     	    height: 300,
     	    colorDark: "#333",
