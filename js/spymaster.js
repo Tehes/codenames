@@ -1,6 +1,6 @@
 spymaster = function() {
     function makeBoard() {
-        var hash = location.hash.substr(1);
+        var hash = location.hash.substring(1);
 
         // for testing purposes
         // var hash = "0002001101231010201212122";
