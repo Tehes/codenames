@@ -84,6 +84,10 @@ header .teams {
     cursor: grabbing;
 }
 
+.card:hover:not(:where(.blue, .red, .neutral, .black)) {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 .blue {
     background-color: rgb(30, 160, 255);
     color: #FFF;
