@@ -1,4 +1,4 @@
-codenames = function() {
+codenames = function () {
 
     /* -------------------- Helper functions -------------------- */
 
@@ -27,7 +27,7 @@ codenames = function() {
     var words = ["Matte", "Essen", "Blüte", "Kerze", "Bein", "Tempo", "Quartett", "Siegel", "Torte", "Kater", " Berliner", "Loch Ness", "Bart", "Blatt", "Kanal", "Europa", "Peking", "Feder", "Börse", "Birne", "Erde", "Wurm", "Kasino", "Hamburger", "Drache", "Auto", "Zitrone", "Auflauf", "Bund", "Watt", "Mandel", "Läufer", "Film", "Riemen", "Morgenstern", "Weide", "Gang", "Horst", "Rom", "Shakespeare", "Verband", "Niete", "Vorsatz", "Hering", "Strom", "Stift", "Hut", "Feuer", "Lakritze", "Mutter", "Loge", "Oper", "Hollywood", "Ton", "Rock", "Lippe", "Kraft", "Tafel", "Kippe", "Adler", "Strasse", "Pistole", "Boot", "Wanze", "Prinzessin", "Millionär", "Hund", "Jet", "Botschaft", "Schuh", "Krankheit", "Note", "Brötchen", "Stuhl", "Kiwi", "Gold", "Königin", "China", "Flügel", "Funken", "Ladung", "Australien", "Mangel", "Muschel", "Rute", "Quelle", "Rost", "Bock", "Ägypten", "Bindung", "Fisch", "Soldat", "Mittel", "Skelett", "Seite", "Flöte", "Zeit", "Dinosaurier", "Pferd", "Fackel", "Gabel", "Strudel", "Alpen", "König", "Lehrer", "Daumen", "Schnee", "Pilot", "Tag", "Ring", "Stern", "Schiff", "Flasche", "Glas", "Deutschland", "Flur", "Schuppen", "Tor", "Pension", "Nadel", "Schirm", "Tanz", "Linie", "Steuer", "Karte", "Korb", "Horn", "Löwe", "Fleck", "Spiel", "Herz", "Schnur", "Orange", "Himalaja", "Raute", "Bett", "Anwalt", "Känguruh", "Grad", "Futter", "Taucher", "Melone", "Strauss", "Koks", "Römer", "Brand", "Gut", "Stamm", "Hotel", "Gras", "Uhr", "Tisch", "Fessel", "Schale", "Mund", "Nagel", "Dame", "Drucker", "Messe", "Ketchup", "Geschirr", "Theater", "Osten", "Tod", "Fuss", "Blau", "Turm", "Chor", "Rolle", "Bombe", "Bergsteiger", "Polizei", "Leben", "Erika", "Taste", "Stock", "Auge", "Brücke", "Verein", "Frankreich", "Mine", "Schotten", "Oktopus", "Gürtel", "Zwerg", "Olymp", "Krankenhaus", "Strand", "Riese", "Stadion", "Wal", "Ball", "Kreis", "Toast", "Bremse", "Limousine", "Gesicht", "Katze", "Bär", "Ritter"];
 
     var logo = document.querySelector("h1");
-    var gameGrid =  document.querySelector("#GameGrid");
+    var gameGrid = document.querySelector("#GameGrid");
     var cards = document.querySelectorAll(".card");
     var blueCounter = document.querySelector(".blue span");
     var redCounter = document.querySelector(".red span");
@@ -66,39 +66,39 @@ codenames = function() {
 
     function setColors() {
         var colors, i;
-    	 colors = [];
+        colors = [];
 
-    	for (i = 0; i < 8; i++) { colors.push("blue"); }
-    	for (i = 0; i < 8; i++) { colors.push("red"); }
-    	for (i = 0; i < 7; i++) { colors.push("neutral"); }
-    	colors.push("black");
-    	colors.push(startingTeam);
+        for (i = 0; i < 8; i++) { colors.push("blue"); }
+        for (i = 0; i < 8; i++) { colors.push("red"); }
+        for (i = 0; i < 7; i++) { colors.push("neutral"); }
+        colors.push("black");
+        colors.push(startingTeam);
 
-    	shuffle(colors);
+        shuffle(colors);
 
-    	return colors;
+        return colors;
     }
 
     function setCards() {
-    	for (var i = 0; i < cards.length; i++) {
-    	    cards[i].dataset.color = colors[i];
-    	    cards[i].dataset.word = words[i];
-    	    cards[i].textContent = words[i];
-    	}
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].dataset.color = colors[i];
+            cards[i].dataset.word = words[i];
+            cards[i].textContent = words[i];
+        }
     }
 
     function generateHash() {
         var hash, i;
 
         hash = "";
-    	for (i = 0; i < colors.length; i++) {
-    	    if (colors[i] === "blue") { hash += "0"; }
-    	    if (colors[i] === "red") { hash += "1"; }
-    	    if (colors[i] === "neutral") { hash += "2"; }
-    	    if (colors[i] === "black") { hash += "3"; }
-    	}
+        for (i = 0; i < colors.length; i++) {
+            if (colors[i] === "blue") { hash += "0"; }
+            if (colors[i] === "red") { hash += "1"; }
+            if (colors[i] === "neutral") { hash += "2"; }
+            if (colors[i] === "black") { hash += "3"; }
+        }
 
-    	return hash;
+        return hash;
     }
 
     function makeQRCode() {
@@ -113,15 +113,13 @@ codenames = function() {
         modal.appendChild(qr);
 
         qrcode = new QRCode(document.querySelector("#qrcode"), {
-    	    text: "http://tehes.github.io/codenames/spymaster.html#" + hash,
-    	    width: 300,
-    	    height: 300,
-    	    colorDark: "#333",
-    	    colorLight: "#FFF",
-    	    correctLevel: QRCode.CorrectLevel.H
-    	});
+            text: "http://tehes.github.io/codenames/spymaster.html#" + hash,
+            colorDark: "#333",
+            colorLight: "#FFF",
+            correctLevel: QRCode.CorrectLevel.H
+        });
 
-    	modal.addEventListener("click", deleteQR, false);
+        modal.addEventListener("click", deleteQR, false);
 
         function deleteQR() {
             var modal = document.querySelector("#modal");
@@ -150,15 +148,15 @@ codenames = function() {
     }
 
     function isFinished() {
-        if ( document.querySelectorAll("#GameGrid .black").length === 1) {
+        if (document.querySelectorAll("#GameGrid .black").length === 1) {
             alert("Spiel beendet");
             solve();
         }
-        else if ( blueCount === document.querySelectorAll("#GameGrid .blue").length ) {
+        else if (blueCount === document.querySelectorAll("#GameGrid .blue").length) {
             alert("Blau gewinnt");
             solve();
         }
-        else if ( redCount === document.querySelectorAll("#GameGrid .red").length ) {
+        else if (redCount === document.querySelectorAll("#GameGrid .red").length) {
             alert("Rot gewinnt");
             solve();
         }
@@ -192,16 +190,16 @@ codenames = function() {
         blueCounter.textContent = 0;
         redCounter.textContent = 0;
 
-        playedWords = words.splice(0,25);
+        playedWords = words.splice(0, 25);
 
         init();
     }
 
     /* -------------------- Public -------------------- */
     return {
-		init:init,
-		solve:solve
-	};
+        init: init,
+        solve: solve
+    };
 }();
 
 codenames.init();
