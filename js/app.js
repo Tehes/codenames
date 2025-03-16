@@ -12,7 +12,8 @@ function shuffle(array) {
 
 /* -------------------- Variables -------------------- */
 
-import { words } from './words.js';
+import { wordList } from './words.js';
+let words = wordList;
 
 const logo = document.querySelector("h1");
 const gameGrid = document.querySelector("#GameGrid");
@@ -54,12 +55,10 @@ function init() {
 
 function setColorsWithNoBigClusters() {
     // Basis-Array für Farben
-    const colors = [];
-    for (let i = 0; i < 8; i++) { colors.push("blue"); }
-    for (let i = 0; i < 8; i++) { colors.push("red"); }
-    for (let i = 0; i < 7; i++) { colors.push("neutral"); }
-    colors.push("black");
-    colors.push(startingTeam); // je nach init()
+    const blueColors = Array.from({ length: 8 }, () => "blue");
+    const redColors = Array.from({ length: 8 }, () => "red");
+    const neutralColors = Array.from({ length: 7 }, () => "neutral");
+    const colors = [...blueColors, ...redColors, ...neutralColors, "black", startingTeam];
 
     let validLayoutFound = false;
     while (!validLayoutFound) {
@@ -143,14 +142,14 @@ function setCards() {
 }
 
 function generateHash() {
-    let hash = "";
-    for (let i = 0; i < colors.length; i++) {
-        if (colors[i] === "blue") { hash += "0"; }
-        if (colors[i] === "red") { hash += "1"; }
-        if (colors[i] === "neutral") { hash += "2"; }
-        if (colors[i] === "black") { hash += "3"; }
-    }
-
+    const hash = colors
+        .map((color) => {
+            if (color === "blue") return "0";
+            if (color === "red") return "1";
+            if (color === "neutral") return "2";
+            if (color === "black") return "3";
+        })
+        .join("");
     return hash;
 }
 
@@ -158,17 +157,24 @@ function makeQRCode() {
     const modal = document.querySelector("#modal");
     modal.className = "";
 
-    const qr = document.createElement("div");
+    // Erstelle einen Container für den QR-Code
+    const qrContainer = document.createElement("div");
+    qrContainer.id = "qrcode";
+    modal.appendChild(qrContainer);
 
-    qr.id = "qrcode";
-    modal.appendChild(qr);
-
-    window.qrcode = new QRCode(document.querySelector("#qrcode"), {
+    // Erzeuge den QR-Code mit kjua.js
+    const qr = window.kjua({
         text: `http://tehes.github.io/codenames/spymaster.html#${hash}`,
-        colorDark: "#333",
-        colorLight: "#FFF",
-        correctLevel: QRCode.CorrectLevel.H
+        render: "svg",      // Ausgabe als SVG für Skalierbarkeit
+        size: 256,          // Grundgröße (SVG skaliert dann automatisch)
+        fill: "#333",       // Farbe für die dunklen Module
+        crisp: true         // für scharfe Kanten
+        // weitere Optionen können hier hinzugefügt werden
     });
+
+    // Füge den generierten QR-Code in den Container ein
+    qrContainer.innerHTML = "";
+    qrContainer.appendChild(qr);
 
     modal.addEventListener("click", deleteQR, false);
 
@@ -216,10 +222,10 @@ function isFinished() {
 function solve() {
     gameGrid.removeEventListener("transitionend", isFinished, false);
 
-    for (let i = 0; i < cards.length; i++) {
-        cards[i].classList.add(cards[i].dataset.color);
-        cards[i].textContent = cards[i].dataset.word;
-    }
+    cards.forEach((card) => {
+        card.classList.add(card.dataset.color);
+        card.textContent = card.dataset.word;
+    });
     solved = true;
 }
 
@@ -230,9 +236,9 @@ function reset() {
     logo.removeEventListener("click", reset, false);
     gameGrid.removeEventListener("click", play);
 
-    for (let i = 0; i < cards.length; i++) {
-        cards[i].classList.remove(cards[i].dataset.color);
-    }
+    cards.forEach((card) => {
+        card.classList.remove(card.dataset.color);
+    });
 
     blueCounter.textContent = 0;
     redCounter.textContent = 0;

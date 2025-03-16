@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    touch-action: manipulation;
+    /* disable double tap to zoom */
+}
+
 body {
     background-color: #eee;
     font-family: 'Oswald', Arial, Helvetica, sans-serif;
@@ -110,13 +116,20 @@ header .teams {
 
 #qrcode {
     display: flex;
-    padding: 30px;
+    width: 80vmin;
+    max-width: 400px;
+    padding: 3vmin;
     z-index: 20;
     justify-content: center;
     align-items: center;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#qrcode svg {
+    width: 100% !important;
+    height: auto !important;
 }
 
 #modal.invisible {
