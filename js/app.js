@@ -166,7 +166,6 @@ function makeQRCode() {
     const qr = window.kjua({
         text: `http://tehes.github.io/codenames/spymaster.html#${hash}`,
         render: "svg",      // Ausgabe als SVG für Skalierbarkeit
-        size: 256,          // Grundgröße (SVG skaliert dann automatisch)
         fill: "#333",       // Farbe für die dunklen Module
         crisp: true         // für scharfe Kanten
         // weitere Optionen können hier hinzugefügt werden
