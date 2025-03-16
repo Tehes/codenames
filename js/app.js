@@ -1,272 +1,250 @@
-codenames = function () {
+/* -------------------- Helper functions -------------------- */
 
-    /* -------------------- Helper functions -------------------- */
+function shuffle(array) {
+    let currentIndex = array.length;
+    while (currentIndex !== 0) {
+        const randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
 
-    function shuffle(array) {
-        var currentIndex = array.length,
-            temporaryValue, randomIndex;
+/* -------------------- Variables -------------------- */
 
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
+import { words } from './words.js';
 
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
+const logo = document.querySelector("h1");
+const gameGrid = document.querySelector("#GameGrid");
+const cards = document.querySelectorAll(".card");
+const blueCounter = document.querySelector(".blue span");
+const redCounter = document.querySelector(".red span");
 
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
+let startingTeam, blueCount, redCount, solved, playedWords, colors, hash;
 
-        return array;
+/* -------------------- Functions -------------------- */
+
+function init() {
+    startingTeam = (Math.round(Math.random()) === 0) ? "blue" : "red";
+    blueCount = (startingTeam === "blue") ? 9 : 8;
+    redCount = (startingTeam === "red") ? 9 : 8;
+
+    solved = false;
+
+    shuffle(words);
+    if (playedWords) {
+        words = words.concat(playedWords);
+        playedWords = [];
     }
 
-    /* -------------------- Variables -------------------- */
+    colors = setColorsWithNoBigClusters();
+    setCards();
 
-    var words = ["Matte", "Essen", "Blüte", "Kerze", "Bein", "Tempo", "Quartett", "Siegel", "Torte", "Kater", " Berliner", "Loch Ness", "Bart", "Blatt", "Kanal", "Europa", "Peking", "Feder", "Börse", "Birne", "Erde", "Wurm", "Kasino", "Hamburger", "Drache", "Auto", "Zitrone", "Auflauf", "Bund", "Watt", "Mandel", "Läufer", "Film", "Riemen", "Morgenstern", "Weide", "Gang", "Horst", "Rom", "Shakespeare", "Verband", "Niete", "Vorsatz", "Hering", "Strom", "Stift", "Hut", "Feuer", "Lakritze", "Mutter", "Loge", "Oper", "Hollywood", "Ton", "Rock", "Lippe", "Kraft", "Tafel", "Kippe", "Adler", "Strasse", "Pistole", "Boot", "Wanze", "Prinzessin", "Millionär", "Hund", "Jet", "Botschaft", "Schuh", "Krankheit", "Note", "Brötchen", "Stuhl", "Kiwi", "Gold", "Königin", "China", "Flügel", "Funken", "Ladung", "Australien", "Mangel", "Muschel", "Rute", "Quelle", "Rost", "Bock", "Ägypten", "Bindung", "Fisch", "Soldat", "Mittel", "Skelett", "Seite", "Flöte", "Zeit", "Dinosaurier", "Pferd", "Fackel", "Gabel", "Strudel", "Alpen", "König", "Lehrer", "Daumen", "Schnee", "Pilot", "Tag", "Ring", "Stern", "Schiff", "Flasche", "Glas", "Deutschland", "Flur", "Schuppen", "Tor", "Pension", "Nadel", "Schirm", "Tanz", "Linie", "Steuer", "Karte", "Korb", "Horn", "Löwe", "Fleck", "Spiel", "Herz", "Schnur", "Orange", "Himalaja", "Raute", "Bett", "Anwalt", "Känguruh", "Grad", "Futter", "Taucher", "Melone", "Strauss", "Koks", "Römer", "Brand", "Gut", "Stamm", "Hotel", "Gras", "Uhr", "Tisch", "Fessel", "Schale", "Mund", "Nagel", "Dame", "Drucker", "Messe", "Ketchup", "Geschirr", "Theater", "Osten", "Tod", "Fuss", "Blau", "Turm", "Chor", "Rolle", "Bombe", "Bergsteiger", "Polizei", "Leben", "Erika", "Taste", "Stock", "Auge", "Brücke", "Verein", "Frankreich", "Mine", "Schotten", "Oktopus", "Gürtel", "Zwerg", "Olymp", "Krankenhaus", "Strand", "Riese", "Stadion", "Wal", "Ball", "Kreis", "Toast", "Bremse", "Limousine", "Gesicht", "Katze", "Bär", "Ritter"];
+    hash = generateHash();
+    makeQRCode();
 
-    var logo = document.querySelector("h1");
-    var gameGrid = document.querySelector("#GameGrid");
-    var cards = document.querySelectorAll(".card");
-    var blueCounter = document.querySelector(".blue span");
-    var redCounter = document.querySelector(".red span");
+    logo.addEventListener("click", reset, false);
 
-    var startingTeam, blueCount, redCount, solved, playedWords, colors, hash;
+    console.log(words.length + " Wörter");
+    console.log("Hash = " + hash);
 
-    /* -------------------- Functions -------------------- */
+    gameGrid.addEventListener("click", play, false);
+    gameGrid.addEventListener("transitionend", isFinished, false);
+}
 
-    function init() {
-        startingTeam = (Math.round(Math.random()) === 0) ? "blue" : "red";
-        blueCount = (startingTeam === "blue") ? 9 : 8;
-        redCount = (startingTeam === "red") ? 9 : 8;
+function setColorsWithNoBigClusters() {
+    // Basis-Array für Farben
+    const colors = [];
+    for (let i = 0; i < 8; i++) { colors.push("blue"); }
+    for (let i = 0; i < 8; i++) { colors.push("red"); }
+    for (let i = 0; i < 7; i++) { colors.push("neutral"); }
+    colors.push("black");
+    colors.push(startingTeam); // je nach init()
 
-        solved = false;
-
-        shuffle(words);
-        if (playedWords) {
-            words = words.concat(playedWords);
-            playedWords = [];
+    let validLayoutFound = false;
+    while (!validLayoutFound) {
+        shuffle(colors);
+        // Prüfen, ob kein Cluster > 4 Felder
+        if (!hasTooLargeCluster(colors, 4)) {
+            validLayoutFound = true;
         }
-
-        colors = setColorsWithNoBigClusters();
-        setCards();
-
-        hash = generateHash();
-        makeQRCode();
-
-        logo.addEventListener("click", reset, false);
-
-        console.log(words.length + " Wörter");
-        console.log("Hash = " + hash);
-
-        gameGrid.addEventListener("click", play, false);
-        gameGrid.addEventListener("transitionend", isFinished, false);
     }
+    return colors;
+}
 
-    function setColorsWithNoBigClusters() {
-        // Basis-Array für Farben
-        const colors = [];
-        for (let i = 0; i < 8; i++) { colors.push("blue"); }
-        for (let i = 0; i < 8; i++) { colors.push("red"); }
-        for (let i = 0; i < 7; i++) { colors.push("neutral"); }
-        colors.push("black");
-        colors.push(startingTeam); // je nach init()
+/* Prüft, ob es irgendwo im 5x5-Grid einen Farb-Cluster gibt,
+    der größer ist als maxClusterSize. Berücksichtigt dabei
+    auch diagonale Nachbarn (8 Richtungen). */
+function hasTooLargeCluster(colors, maxClusterSize) {
+    const rows = 5;
+    const cols = 5;
+    const visited = new Array(colors.length).fill(false);
 
-        let validLayoutFound = false;
-        while (!validLayoutFound) {
-            shuffle(colors);
-            // Prüfen, ob kein Cluster > 4 Felder
-            if (!hasTooLargeCluster(colors, 4)) {
-                validLayoutFound = true;
-            }
-        }
-        return colors;
-    }
-
-    /* Prüft, ob es irgendwo im 5x5-Grid einen Farb-Cluster gibt,
-        der größer ist als maxClusterSize. Berücksichtigt dabei
-        auch diagonale Nachbarn (8 Richtungen). */
-    function hasTooLargeCluster(colors, maxClusterSize) {
-        const rows = 5;
-        const cols = 5;
-        const visited = new Array(colors.length).fill(false);
-
-        // Hilfsfunktion, um die Indexe der Nachbarn (inkl. Diagonal) zu bekommen
-        function getNeighbors(r, c) {
-            const neighbors = [];
-            for (let dr = -1; dr <= 1; dr++) {
-                for (let dc = -1; dc <= 1; dc++) {
-                    if (dr === 0 && dc === 0) continue; // sich selbst überspringen
-                    const nr = r + dr;
-                    const nc = c + dc;
-                    // Nur gültige Felder (im 5x5) aufnehmen
-                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                        neighbors.push(nr * cols + nc);
-                    }
-                }
-            }
-            return neighbors;
-        }
-
-        // BFS, um die Größe eines zusammenhängenden Farb-Clusters zu ermitteln
-        function bfs(startIndex) {
-            const queue = [startIndex];
-            visited[startIndex] = true;
-            const startColor = colors[startIndex];
-            let clusterSize = 0;
-
-            while (queue.length > 0) {
-                const current = queue.shift();
-                clusterSize++;
-                const r = Math.floor(current / cols);
-                const c = current % cols;
-
-                // Nachbarn (8 Richtungen) holen
-                const neighbors = getNeighbors(r, c);
-                for (const n of neighbors) {
-                    if (!visited[n] && colors[n] === startColor) {
-                        visited[n] = true;
-                        queue.push(n);
-                    }
-                }
-            }
-            return clusterSize;
-        }
-
-        // Jeden Index im Array prüfen, ob wir dort einen (noch) unbesuchten Cluster haben
-        for (let i = 0; i < colors.length; i++) {
-            if (!visited[i]) {
-                const size = bfs(i);
-                if (size > maxClusterSize) {
-                    return true; // Es gibt mindestens einen Cluster, der zu groß ist
+    // Hilfsfunktion, um die Indexe der Nachbarn (inkl. Diagonal) zu bekommen
+    function getNeighbors(r, c) {
+        const neighbors = [];
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue; // sich selbst überspringen
+                const nr = r + dr;
+                const nc = c + dc;
+                // Nur gültige Felder (im 5x5) aufnehmen
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                    neighbors.push(nr * cols + nc);
                 }
             }
         }
-        return false; // Kein zu großer Cluster gefunden
+        return neighbors;
     }
 
-    function setCards() {
-        for (var i = 0; i < cards.length; i++) {
-            cards[i].dataset.color = colors[i];
-            cards[i].dataset.word = words[i];
-            cards[i].textContent = words[i];
+    // BFS, um die Größe eines zusammenhängenden Farb-Clusters zu ermitteln
+    function bfs(startIndex) {
+        const queue = [startIndex];
+        visited[startIndex] = true;
+        const startColor = colors[startIndex];
+        let clusterSize = 0;
+
+        while (queue.length > 0) {
+            const current = queue.shift();
+            clusterSize++;
+            const r = Math.floor(current / cols);
+            const c = current % cols;
+
+            // Nachbarn (8 Richtungen) holen
+            const neighbors = getNeighbors(r, c);
+            for (const n of neighbors) {
+                if (!visited[n] && colors[n] === startColor) {
+                    visited[n] = true;
+                    queue.push(n);
+                }
+            }
         }
+        return clusterSize;
     }
 
-    function generateHash() {
-        var hash, i;
-
-        hash = "";
-        for (i = 0; i < colors.length; i++) {
-            if (colors[i] === "blue") { hash += "0"; }
-            if (colors[i] === "red") { hash += "1"; }
-            if (colors[i] === "neutral") { hash += "2"; }
-            if (colors[i] === "black") { hash += "3"; }
-        }
-
-        return hash;
-    }
-
-    function makeQRCode() {
-        var modal, qr;
-
-        modal = document.querySelector("#modal");
-        modal.className = "";
-
-        qr = document.createElement("div");
-
-        qr.id = "qrcode";
-        modal.appendChild(qr);
-
-        qrcode = new QRCode(document.querySelector("#qrcode"), {
-            text: "http://tehes.github.io/codenames/spymaster.html#" + hash,
-            colorDark: "#333",
-            colorLight: "#FFF",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-
-        modal.addEventListener("click", deleteQR, false);
-
-        function deleteQR() {
-            var modal = document.querySelector("#modal");
-            modal.className = "invisible";
-            document.querySelector("#qrcode").remove();
-            modal.removeEventListener("click", deleteQR, false);
+    // Jeden Index im Array prüfen, ob wir dort einen (noch) unbesuchten Cluster haben
+    for (let i = 0; i < colors.length; i++) {
+        if (!visited[i]) {
+            const size = bfs(i);
+            if (size > maxClusterSize) {
+                return true; // Es gibt mindestens einen Cluster, der zu groß ist
+            }
         }
     }
+    return false; // Kein zu großer Cluster gefunden
+}
 
-    function play() {
-        //reset if finished
-        if (solved === true) {
-            reset();
-            return;
-        }
+function setCards() {
+    cards.forEach((card, i) => {
+        card.dataset.color = colors[i];
+        card.dataset.word = words[i];
+        card.textContent = words[i];
+    });
+}
 
-        // select card
-        if (event.target.dataset.color) {
-            event.target.classList.add(event.target.dataset.color);
-            event.target.textContent = "";
-        }
-
-        // increment teams count
-        blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
-        redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
+function generateHash() {
+    let hash = "";
+    for (let i = 0; i < colors.length; i++) {
+        if (colors[i] === "blue") { hash += "0"; }
+        if (colors[i] === "red") { hash += "1"; }
+        if (colors[i] === "neutral") { hash += "2"; }
+        if (colors[i] === "black") { hash += "3"; }
     }
 
-    function isFinished() {
-        if (document.querySelectorAll("#GameGrid .black").length === 1) {
-            alert("Spiel beendet");
-            solve();
-        }
-        else if (blueCount === document.querySelectorAll("#GameGrid .blue").length) {
-            alert("Blau gewinnt");
-            solve();
-        }
-        else if (redCount === document.querySelectorAll("#GameGrid .red").length) {
-            alert("Rot gewinnt");
-            solve();
-        }
+    return hash;
+}
+
+function makeQRCode() {
+    const modal = document.querySelector("#modal");
+    modal.className = "";
+
+    const qr = document.createElement("div");
+
+    qr.id = "qrcode";
+    modal.appendChild(qr);
+
+    window.qrcode = new QRCode(document.querySelector("#qrcode"), {
+        text: `http://tehes.github.io/codenames/spymaster.html#${hash}`,
+        colorDark: "#333",
+        colorLight: "#FFF",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    modal.addEventListener("click", deleteQR, false);
+
+    function deleteQR() {
+        const modal = document.querySelector("#modal");
+        modal.className = "invisible";
+        document.querySelector("#qrcode").remove();
+        modal.removeEventListener("click", deleteQR, false);
+    }
+}
+
+function play(ev) {
+    //reset if finished
+    if (solved === true) {
+        reset();
+        return;
     }
 
-    function solve() {
-        var i;
+    // select card
+    if (ev.target.dataset.color) {
+        ev.target.classList.add(ev.target.dataset.color);
+        ev.target.textContent = "";
+    }
 
+    // increment teams count
+    blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
+    redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
+}
+
+function isFinished() {
+    if (document.querySelectorAll("#GameGrid .black").length === 1) {
+        alert("Spiel beendet");
+        solve();
+    }
+    else if (blueCount === document.querySelectorAll("#GameGrid .blue").length) {
+        alert("Blau gewinnt");
+        solve();
+    }
+    else if (redCount === document.querySelectorAll("#GameGrid .red").length) {
+        alert("Rot gewinnt");
+        solve();
+    }
+}
+
+function solve() {
+    gameGrid.removeEventListener("transitionend", isFinished, false);
+
+    for (let i = 0; i < cards.length; i++) {
+        cards[i].classList.add(cards[i].dataset.color);
+        cards[i].textContent = cards[i].dataset.word;
+    }
+    solved = true;
+}
+
+function reset() {
+    if (solved === false) {
         gameGrid.removeEventListener("transitionend", isFinished, false);
+    }
+    logo.removeEventListener("click", reset, false);
+    gameGrid.removeEventListener("click", play);
 
-        for (i = 0; i < cards.length; i++) {
-            cards[i].classList.add(cards[i].dataset.color);
-            cards[i].textContent = cards[i].dataset.word;
-        }
-        solved = true;
+    for (let i = 0; i < cards.length; i++) {
+        cards[i].classList.remove(cards[i].dataset.color);
     }
 
-    function reset() {
-        var i;
+    blueCounter.textContent = 0;
+    redCounter.textContent = 0;
 
-        if (solved === false) {
-            gameGrid.removeEventListener("transitionend", isFinished, false);
-        }
-        logo.removeEventListener("click", reset, false);
-        gameGrid.removeEventListener("click", play);
+    playedWords = words.splice(0, 25);
 
-        for (i = 0; i < cards.length; i++) {
-            cards[i].classList.remove(cards[i].dataset.color);
-        }
+    init();
+}
 
-        blueCounter.textContent = 0;
-        redCounter.textContent = 0;
+window.codenames = {
+    init,
+    solve
+};
 
-        playedWords = words.splice(0, 25);
-
-        init();
-    }
-
-    /* -------------------- Public -------------------- */
-    return {
-        init: init,
-        solve: solve
-    };
-}();
-
-codenames.init();
+window.codenames.init();
