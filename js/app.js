@@ -49,7 +49,7 @@ codenames = function () {
             playedWords = [];
         }
 
-        colors = setColors();
+        colors = setColorsWithNoBigClusters();
         setCards();
 
         hash = generateHash();
@@ -64,19 +64,86 @@ codenames = function () {
         gameGrid.addEventListener("transitionend", isFinished, false);
     }
 
-    function setColors() {
-        var colors, i;
-        colors = [];
-
-        for (i = 0; i < 8; i++) { colors.push("blue"); }
-        for (i = 0; i < 8; i++) { colors.push("red"); }
-        for (i = 0; i < 7; i++) { colors.push("neutral"); }
+    function setColorsWithNoBigClusters() {
+        // Basis-Array für Farben
+        const colors = [];
+        for (let i = 0; i < 8; i++) { colors.push("blue"); }
+        for (let i = 0; i < 8; i++) { colors.push("red"); }
+        for (let i = 0; i < 7; i++) { colors.push("neutral"); }
         colors.push("black");
-        colors.push(startingTeam);
+        colors.push(startingTeam); // je nach init()
 
-        shuffle(colors);
-
+        let validLayoutFound = false;
+        while (!validLayoutFound) {
+            shuffle(colors);
+            // Prüfen, ob kein Cluster > 4 Felder
+            if (!hasTooLargeCluster(colors, 4)) {
+                validLayoutFound = true;
+            }
+        }
         return colors;
+    }
+
+    /* Prüft, ob es irgendwo im 5x5-Grid einen Farb-Cluster gibt,
+        der größer ist als maxClusterSize. Berücksichtigt dabei
+        auch diagonale Nachbarn (8 Richtungen). */
+    function hasTooLargeCluster(colors, maxClusterSize) {
+        const rows = 5;
+        const cols = 5;
+        const visited = new Array(colors.length).fill(false);
+
+        // Hilfsfunktion, um die Indexe der Nachbarn (inkl. Diagonal) zu bekommen
+        function getNeighbors(r, c) {
+            const neighbors = [];
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue; // sich selbst überspringen
+                    const nr = r + dr;
+                    const nc = c + dc;
+                    // Nur gültige Felder (im 5x5) aufnehmen
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                        neighbors.push(nr * cols + nc);
+                    }
+                }
+            }
+            return neighbors;
+        }
+
+        // BFS, um die Größe eines zusammenhängenden Farb-Clusters zu ermitteln
+        function bfs(startIndex) {
+            const queue = [startIndex];
+            visited[startIndex] = true;
+            const startColor = colors[startIndex];
+            let clusterSize = 0;
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                clusterSize++;
+                const r = Math.floor(current / cols);
+                const c = current % cols;
+
+                // Nachbarn (8 Richtungen) holen
+                const neighbors = getNeighbors(r, c);
+                for (const n of neighbors) {
+                    if (!visited[n] && colors[n] === startColor) {
+                        visited[n] = true;
+                        queue.push(n);
+                    }
+                }
+            }
+            return clusterSize;
+        }
+
+        // Jeden Index im Array prüfen, ob wir dort einen (noch) unbesuchten Cluster haben
+        for (let i = 0; i < colors.length; i++) {
+            if (!visited[i]) {
+                const size = bfs(i);
+                if (size > maxClusterSize) {
+                    return true; // Es gibt mindestens einen Cluster, der zu groß ist
+                }
+            }
+        }
+        return false; // Kein zu großer Cluster gefunden
     }
 
     function setCards() {
