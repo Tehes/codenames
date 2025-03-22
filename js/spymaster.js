@@ -1,44 +1,44 @@
-spymaster = function () {
-    function makeBoard() {
-        const hash = location.hash.substring(1);
+const urlParams = new URLSearchParams(window.location.search);
+const colorParam = urlParams.get("color");
+const activePlayer = urlParams.get("player");
 
-        // for testing purposes
-        //const hash = "2232244342222442434244222";
-        //const hash = "3100122210010112102021020";
+function makeBoard() {
 
-        const colorIndex = hash.split("");
+    // for testing purposes
+    //const hash = "2232244342222442434244222";
+    //const hash = "3100122210010112102021020";
 
-        const colors = ["blue", "red", "neutral", "black", "green"];
-        const cards = document.querySelectorAll(".card");
+    const colorIndex = colorParam.split("");
 
-        cards.forEach((card, i) => {
-            card.classList.add(colors[colorIndex[i]]);
-        });
-    }
+    const colors = ["blue", "red", "neutral", "black", "green"];
+    const cards = document.querySelectorAll(".card");
 
-    function nameStarter() {
-        const blueCards = document.querySelectorAll(".blue");
-        const redCards = document.querySelectorAll(".red");
-        const greenCards = document.querySelectorAll(".green");
+    cards.forEach((card, i) => {
+        card.classList.add(colors[colorIndex[i]]);
+    });
+}
 
-        const startingTeam = (blueCards.length > redCards.length) ? "Blau" : "Rot";
-
-        const teamVariable = document.querySelector("h1 span");
-        if (greenCards.length > 0) {
-            teamVariable.textContent = "";
-        } else {
-            teamVariable.textContent = startingTeam;
-        }
-    }
-
-    function init() {
-        makeBoard();
-        nameStarter();
-    }
-
-    return {
-        init: init
+function nameStarter() {
+    const mapping = {
+        left: "Links",
+        right: "Rechts",
+        blue: "Blau",
+        red: "Rot"
     };
-}();
 
-spymaster.init();
+    const startingTeam = mapping[activePlayer];
+
+    const teamVariable = document.querySelector("h1 span");
+    teamVariable.textContent = startingTeam;
+}
+
+function init() {
+    makeBoard();
+    nameStarter();
+}
+
+window.spymaster = {
+    init
+};
+
+window.spymaster.init();
