@@ -22,8 +22,8 @@ function nameStarter() {
     const mapping = {
         left: "Links",
         right: "Rechts",
-        blue: "Blau",
-        red: "Rot"
+        blue: "Team Blau",
+        red: "Team Rot"
     };
 
     const startingTeam = mapping[activePlayer];
