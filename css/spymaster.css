@@ -47,3 +47,8 @@ h1 {
     background-color: rgb(50, 50, 50);
     border: 2px solid #333;
 }
+
+.green {
+    background-color: rgb(140, 185, 75);
+    color: #FFF;
+}

@@ -1,33 +1,33 @@
-spymaster = function() {
+spymaster = function () {
     function makeBoard() {
-        var hash = location.hash.substring(1);
+        const hash = location.hash.substring(1);
 
         // for testing purposes
         // var hash = "0002001101231010201212122";
 
-        var colorIndex = hash.split("");
+        const colorIndex = hash.split("");
 
-        var colors = ["blue", "red", "neutral", "black"];
-        var cards = document.querySelectorAll(".card");
+        const colors = ["blue", "red", "neutral", "black", "green"];
+        const cards = document.querySelectorAll(".card");
 
-        for (var i = 0; i < cards.length; i++) {
+        for (let i = 0; i < cards.length; i++) {
             cards[i].classList.add(colors[colorIndex[i]]);
         }
     }
 
     function nameStarter() {
-        var blueCards = document.querySelectorAll(".blue");
-        var redCards = document.querySelectorAll(".red");
+        const blueCards = document.querySelectorAll(".blue");
+        const redCards = document.querySelectorAll(".red");
 
-        var startingTeam = (blueCards.length > redCards.length) ? "Blau" : "Rot";
+        const startingTeam = (blueCards.length === 0 && redCards.length === 0) ? false : ((blueCards.length > redCards.length) ? "Blau" : "Rot");
 
-        var teamVariable = document.querySelector("h1 span");
-        teamVariable.textContent = startingTeam;
+        const teamVariable = document.querySelector("h1 span");
+        teamVariable.textContent = (startingTeam === false) ? "" : startingTeam;
     }
 
     function init() {
-    makeBoard();
-    nameStarter();
+        makeBoard();
+        nameStarter();
     }
 
     return {
