@@ -3,7 +3,7 @@ spymaster = function () {
         //const hash = location.hash.substring(1);
 
         // for testing purposes
-        const hash = "2232244342222442434244222";
+        //const hash = "2232244342222442434244222";
         //const hash = "3100122210010112102021020";
 
         const colorIndex = hash.split("");
