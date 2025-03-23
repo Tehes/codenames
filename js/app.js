@@ -14,37 +14,106 @@ function shuffle(array) {
 
 import { wordList } from './words.js';
 let words = wordList;
+let mode = "competitive"; // cooperative or competitive
+let suddenDeath;
 
 const logo = document.querySelector("h1");
 const gameGrid = document.querySelector("#GameGrid");
 const cards = document.querySelectorAll(".card");
-const blueCounter = document.querySelector(".blue span");
-const redCounter = document.querySelector(".red span");
+const modeSwitch = document.querySelector(".segmented-toggle");
+const playerSwitch = document.querySelector("#playerSwitch");
+const leftRadio = document.querySelector('#optionLeft');
+const rightRadio = document.querySelector('#optionRight');
+const scoreLeft = document.querySelector("#scoreLeft");
+const scoreRight = document.querySelector("#scoreRight");
+const leftCounter = scoreLeft.querySelector("span");
+const rightCounter = scoreRight.querySelector("span");
 
-let startingTeam, blueCount, redCount, solved, playedWords, colors, hash;
+
+let startingTeam, blueCount, redCount, greenCount, greenCounterLeft, greenCounterRight, solved, playedWords, colors, colorsLeft, colorsRight, hash, timeTokens, activePlayer;
 
 /* -------------------- Functions -------------------- */
 
 function init() {
-    startingTeam = (Math.round(Math.random()) === 0) ? "blue" : "red";
-    blueCount = (startingTeam === "blue") ? 9 : 8;
-    redCount = (startingTeam === "red") ? 9 : 8;
-
-    solved = false;
-
     shuffle(words);
     if (playedWords) {
         words = words.concat(playedWords);
         playedWords = [];
     }
 
-    colors = setColorsWithNoBigClusters();
+    if (mode === "competitive") {
+        startingTeam = shuffle(["blue", "red"])[0];
+        blueCount = (startingTeam === "blue") ? 9 : 8;
+        redCount = (startingTeam === "red") ? 9 : 8;
+
+        playerSwitch.classList.add("hidden");
+
+        scoreLeft.firstChild.textContent = "Team Blau: ";
+        leftCounter.textContent = "0";
+        scoreLeft.classList.remove("green");
+        scoreLeft.classList.add("blue");
+
+        scoreRight.firstChild.textContent = "Team Rot: ";
+        rightCounter.textContent = "0";
+        scoreRight.classList.remove("green");
+        scoreRight.classList.add("red");
+
+        colors = setColorsWithNoBigClusters();
+
+        hash = generateHash(colors, startingTeam);
+        makeQRCode(hash);
+    }
+    else if (mode === "cooperative") {
+        activePlayer = shuffle(["left", "right"])[0];
+        timeTokens = 9;
+        greenCount = 15;
+        greenCounterLeft = 0;
+        greenCounterRight = 0;
+        suddenDeath = false;
+
+        playerSwitch.classList.remove("hidden");
+        if (activePlayer === "left") {
+            document.querySelector("#optionLeft").checked = true;
+        } else {
+            document.querySelector("#optionRight").checked = true;
+        }
+
+        scoreLeft.firstChild.textContent = "Punkte: ";
+        leftCounter.textContent = "0";
+        scoreLeft.classList.remove("blue");
+        scoreLeft.classList.add("green");
+
+        scoreRight.firstChild.textContent = "Zeitmarker: ";
+        rightCounter.textContent = timeTokens;
+        scoreRight.classList.remove("red");
+        scoreRight.classList.add("green");
+
+        colorsLeft = setColorsWithNoBigClusters();
+        colorsRight;
+        let matchCount;
+        // Wiederhole, bis colorsRight genau 3 übereinstimmende grüne Felder hat
+        do {
+            colorsRight = setColorsWithNoBigClusters();
+            matchCount = 0;
+            for (let i = 0; i < colorsLeft.length; i++) {
+                if (colorsLeft[i] === "green" && colorsRight[i] === "green") {
+                    matchCount++;
+                }
+            }
+        } while (matchCount !== 3);
+
+        hash = generateHash(colorsLeft);
+        makeQRCode(hash, activePlayer);
+        hash = generateHash(colorsRight);
+        makeQRCode(hash, activePlayer);
+    }
+
+    solved = false;
     setCards();
 
-    hash = generateHash();
-    makeQRCode();
-
     logo.addEventListener("click", reset, false);
+    modeSwitch.addEventListener("change", modeSwitchHandler);
+    playerSwitch.addEventListener("change", playerToggleHandler);
 
     console.log(words.length + " Wörter");
     console.log("Hash = " + hash);
@@ -53,12 +122,49 @@ function init() {
     gameGrid.addEventListener("transitionend", isFinished, false);
 }
 
+function modeSwitchHandler() {
+    if (document.querySelector("#optionNormal").checked) {
+        mode = "competitive";
+    } else if (document.querySelector("#optionCoop").checked) {
+        mode = "cooperative";
+    }
+    reset();
+}
+
+function playerToggleHandler() {
+    const selected = document.querySelector('input[name="activePlayer"]:checked').id;
+    activePlayer = (selected === "optionLeft") ? "left" : "right";
+    console.log("Active player switched to: " + activePlayer);
+    if (timeTokens > 0) {
+        timeTokens--;
+        rightCounter.textContent = timeTokens;
+    }
+}
+
+function togglePlayerSwitchUI() {
+    if (leftRadio.checked && greenCounterRight < 9) {
+        rightRadio.checked = true;
+    } else if (rightRadio.checked && greenCounterLeft < 9) {
+        leftRadio.checked = true;
+    }
+    playerToggleHandler();
+}
+
 function setColorsWithNoBigClusters() {
-    // Basis-Array für Farben
-    const blueColors = Array.from({ length: 8 }, () => "blue");
-    const redColors = Array.from({ length: 8 }, () => "red");
-    const neutralColors = Array.from({ length: 7 }, () => "neutral");
-    const colors = [...blueColors, ...redColors, ...neutralColors, "black", startingTeam];
+    let colors;
+    // competitive mode
+    if (mode === "competitive") {
+        const blueColors = Array.from({ length: 8 }, () => "blue");
+        const redColors = Array.from({ length: 8 }, () => "red");
+        const neutralColors = Array.from({ length: 7 }, () => "neutral");
+        colors = [...blueColors, ...redColors, ...neutralColors, "black", startingTeam];
+    }
+    else if (mode === "cooperative") {
+        const greenColors = Array.from({ length: 9 }, () => "green");
+        const neutralColors = Array.from({ length: 13 }, () => "neutral");
+        const blackColors = Array.from({ length: 3 }, () => "black");
+        colors = [...greenColors, ...neutralColors, ...blackColors];
+    }
 
     let validLayoutFound = false;
     while (!validLayoutFound) {
@@ -135,25 +241,32 @@ function hasTooLargeCluster(colors, maxClusterSize) {
 
 function setCards() {
     cards.forEach((card, i) => {
-        card.dataset.color = colors[i];
+        if (mode === "competitive") {
+            card.dataset.color = colors[i];
+        }
+        else if (mode === "cooperative") {
+            card.dataset.coopLeft = colorsLeft[i];
+            card.dataset.coopRight = colorsRight[i];
+        }
         card.dataset.word = words[i];
         card.textContent = words[i];
     });
 }
 
-function generateHash() {
-    const hash = colors
+function generateHash(colorArray) {
+    const hash = colorArray
         .map((color) => {
             if (color === "blue") return "0";
             if (color === "red") return "1";
             if (color === "neutral") return "2";
             if (color === "black") return "3";
+            if (color === "green") return "4";
         })
         .join("");
     return hash;
 }
 
-function makeQRCode() {
+function makeQRCode(colors, activePlayer = false) {
     const modal = document.querySelector("#modal");
     modal.className = "";
 
@@ -164,7 +277,7 @@ function makeQRCode() {
 
     // Erzeuge den QR-Code mit kjua.js
     const qr = window.kjua({
-        text: `http://tehes.github.io/codenames/spymaster.html#${hash}`,
+        text: `http://tehes.github.io/codenames/spymaster.html?color=${colors}&player=${activePlayer}`,
         render: "svg",      // Ausgabe als SVG für Skalierbarkeit
         fill: "#333",       // Farbe für die dunklen Module
         crisp: true         // für scharfe Kanten
@@ -186,6 +299,7 @@ function makeQRCode() {
 }
 
 function play(ev) {
+    if (!ev.target.classList.contains("card")) return;
     //reset if finished
     if (solved === true) {
         reset();
@@ -193,14 +307,54 @@ function play(ev) {
     }
 
     // select card
-    if (ev.target.dataset.color) {
-        ev.target.classList.add(ev.target.dataset.color);
-        ev.target.textContent = "";
+    if (mode === "competitive") {
+        if (ev.target.dataset.color) {
+            ev.target.classList.add(ev.target.dataset.color);
+            ev.target.textContent = "";
+        }
+    } else if (mode === "cooperative") {
+        // Bestimme die Farbe anhand der aktiven Karte:
+        let activeColor;
+        if (activePlayer === "left") {
+            activeColor = ev.target.dataset.coopLeft;
+        } else if (activePlayer === "right") {
+            activeColor = ev.target.dataset.coopRight;
+        }
+        if (activeColor === "neutral") {
+            if (ev.target.classList.contains("neutral-border")) {
+                ev.target.classList.add(activeColor);
+                ev.target.textContent = "";
+            }
+            else {
+                ev.target.classList.add("neutral-border");
+            }
+            if (timeTokens === 0) {
+                suddenDeath = true;
+            }
+            togglePlayerSwitchUI();
+        }
+        else {
+            ev.target.classList.add(activeColor);
+            ev.target.textContent = "";
+            if (activeColor === "green") {
+                if (activePlayer === "left") {
+                    greenCounterLeft++;
+                } else if (activePlayer === "right") {
+                    greenCounterRight++;
+                }
+            }
+        }
+
     }
 
     // increment teams count
-    blueCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
-    redCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
+    if (mode === "competitive") {
+        leftCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
+        rightCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
+    }
+    else if (mode === "cooperative") {
+        leftCounter.textContent = document.querySelectorAll("#GameGrid .green").length;
+    }
 }
 
 function isFinished() {
@@ -216,13 +370,23 @@ function isFinished() {
         alert("Rot gewinnt");
         solve();
     }
+    else if (greenCount === document.querySelectorAll("#GameGrid .green").length) {
+        alert("Ihr habt gewonnen!");
+        solve();
+    }
+    else if (suddenDeath === true) {
+        alert("Ihr habt verloren!");
+        solve();
+    }
 }
 
 function solve() {
     gameGrid.removeEventListener("transitionend", isFinished, false);
 
     cards.forEach((card) => {
-        card.classList.add(card.dataset.color);
+        if (mode === "competitive") {
+            card.classList.add(card.dataset.color);
+        }
         card.textContent = card.dataset.word;
     });
     solved = true;
@@ -233,14 +397,16 @@ function reset() {
         gameGrid.removeEventListener("transitionend", isFinished, false);
     }
     logo.removeEventListener("click", reset, false);
+    modeSwitch.removeEventListener("change", modeSwitchHandler);
+    playerSwitch.removeEventListener("change", playerToggleHandler);
     gameGrid.removeEventListener("click", play);
 
     cards.forEach((card) => {
         card.classList.remove(card.dataset.color);
+        card.classList.remove(card.dataset.coopLeft);
+        card.classList.remove(card.dataset.coopRight);
+        card.classList.remove("neutral-border");
     });
-
-    blueCounter.textContent = 0;
-    redCounter.textContent = 0;
 
     playedWords = words.splice(0, 25);
 

@@ -28,8 +28,24 @@
 	<header>
 		<div>
 			<h1>Codenames</h1>
-			<div class="teams blue">Team Blau: <span>0</span></div>
-			<div class="teams red">Team Rot: <span>0</span></div>
+			<div class="segmented-toggle" id="modeSwitch">
+				<input type="radio" name="mode" id="optionNormal" checked>
+				<label for="optionNormal" class="normal-label">Normal</label>
+				<input type="radio" name="mode" id="optionCoop">
+				<label for="optionCoop" class="coop-label">Coop</label>
+				<div class="segmented-bg"></div>
+			</div>
+			<div class="segmented-toggle hidden" id="playerSwitch">
+				<input type="radio" name="activePlayer" id="optionLeft" checked>
+				<label for="optionLeft" class="left-label">Links</label>
+				<input type="radio" name="activePlayer" id="optionRight">
+				<label for="optionRight" class="right-label">Rechts</label>
+				<div class="segmented-bg"></div>
+			</div>
+			<div class="score">
+				<div id="scoreLeft" class="teams blue">Team Blau: <span>0</span></div>
+				<div id="scoreRight" class="teams red">Team Rot: <span>0</span></div>
+			</div>
 		</div>
 	</header>
 	<div id="GameGrid">

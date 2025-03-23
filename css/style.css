@@ -1,6 +1,16 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background-color: #eee;
     font-family: 'Oswald', Arial, Helvetica, sans-serif;
+}
+
+.hidden {
+    display: none !important;
 }
 
 #modal {
@@ -12,6 +22,7 @@ body {
     width: 100vw;
     height: 100vh;
     display: flex;
+    gap: 3vmin;
     justify-content: center;
     align-items: center;
 }
@@ -34,8 +45,11 @@ header>div {
 header h1 {
     font-size: 3vmin;
     margin: 1vmin 0;
-    flex: 1;
     cursor: grab;
+}
+
+header .score {
+    display: flex;
 }
 
 header .teams {
@@ -49,6 +63,71 @@ header .teams {
 
 .teams span {
     margin-left: 0.5vmin;
+}
+
+.segmented-toggle {
+    position: relative;
+    display: inline-flex;
+    margin: 1vmin;
+    font-size: 1.8vmin;
+    width: 24vmin;
+    background-color: #333;
+    overflow: hidden;
+}
+
+#modeSwitch {
+    border: 2px solid rgb(122, 122, 122);
+}
+
+#playerSwitch {
+    border: 2px solid rgb(140, 185, 75);
+}
+
+.segmented-toggle input[type="radio"] {
+    display: none;
+}
+
+.segmented-toggle label {
+    cursor: pointer;
+    padding: 0.5em 1.5em;
+    text-transform: uppercase;
+    flex: 1;
+    text-align: center;
+    z-index: 2;
+    color: #ccc;
+}
+
+.segmented-toggle .segmented-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    transition: 0.4s ease;
+    z-index: 1;
+}
+
+#modeSwitch .segmented-bg {
+    background-color: rgb(122, 122, 122);
+}
+
+#playerSwitch .segmented-bg {
+    background-color: rgb(140, 185, 75);
+}
+
+.segmented-toggle :is(#optionCoop:checked, #optionRight:checked)~.segmented-bg {
+    left: 50%;
+}
+
+.segmented-toggle :is(#optionNormal:checked, #optionLeft:checked)~.segmented-bg {
+    left: 0;
+}
+
+.segmented-toggle :is(#optionCoop:checked ~ .coop-label,
+    #optionNormal:checked ~ .normal-label,
+    #optionLeft:checked ~ .left-label,
+    #optionRight:checked ~ .right-label) {
+    color: #fff;
 }
 
 #GameGrid {
@@ -66,6 +145,7 @@ header .teams {
 .card {
     border-radius: 10%;
     background-color: #fff;
+    border-color: rgb(250, 200, 100);
     text-align: center;
     font-weight: bold;
     font-size: 3vmin;
@@ -76,7 +156,7 @@ header .teams {
     line-height: 15vmin;
     height: 15vmin;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.5s;
+    transition: background-color 0.5s, border 0.5s;
     cursor: grab;
 }
 
@@ -103,8 +183,17 @@ header .teams {
     color: #333;
 }
 
+.neutral-border {
+    border: 4px solid rgb(250, 200, 100);
+}
+
 .black {
     background-color: rgb(0, 0, 0);
+    color: #FFF;
+}
+
+.green {
+    background-color: rgb(140, 185, 75);
     color: #FFF;
 }
 
