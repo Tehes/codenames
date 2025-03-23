@@ -140,6 +140,7 @@ function playerToggleHandler() {
         rightCounter.textContent = timeTokens;
     }
 
+    // switch back to the other player if the current player has already found 9 green cards
     setTimeout(() => {
         if (activePlayer === "left" && greenCounterLeft === 9) {
             rightRadio.checked = true;
