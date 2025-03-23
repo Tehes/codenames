@@ -139,6 +139,14 @@ function playerToggleHandler() {
         timeTokens--;
         rightCounter.textContent = timeTokens;
     }
+
+    setTimeout(() => {
+        if (activePlayer === "left" && greenCounterLeft === 9) {
+            rightRadio.checked = true;
+        } else if (activePlayer === "right" && greenCounterRight === 9) {
+            leftRadio.checked = true;
+        }
+    }, 500);
 }
 
 function togglePlayerSwitchUI() {
@@ -313,7 +321,7 @@ function play(ev) {
             ev.target.textContent = "";
         }
     } else if (mode === "cooperative") {
-        // Bestimme die Farbe anhand der aktiven Karte:
+        // Determine the color based on the active card
         let activeColor;
         if (activePlayer === "left") {
             activeColor = ev.target.dataset.coopLeft;
@@ -407,10 +415,7 @@ function reset() {
     gameGrid.removeEventListener("click", play);
 
     cards.forEach((card) => {
-        card.classList.remove(card.dataset.color);
-        card.classList.remove(card.dataset.coopLeft);
-        card.classList.remove(card.dataset.coopRight);
-        card.classList.remove("neutral-border");
+        card.classList.remove("blue", "red", "black", "neutral", "green", "neutral-border");
     });
 
     playedWords = words.splice(0, 25);
