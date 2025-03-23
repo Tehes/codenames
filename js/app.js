@@ -317,10 +317,15 @@ function play(ev) {
         let activeColor;
         if (activePlayer === "left") {
             activeColor = ev.target.dataset.coopLeft;
+            ev.target.removeAttribute("data-coop-left");
         } else if (activePlayer === "right") {
             activeColor = ev.target.dataset.coopRight;
+            ev.target.removeAttribute("data-coop-right");
         }
-        if (activeColor === "neutral") {
+        if (!activeColor) {
+            return;
+        }
+        else if (activeColor === "neutral") {
             if (ev.target.classList.contains("neutral-border")) {
                 ev.target.classList.add(activeColor);
                 ev.target.textContent = "";
