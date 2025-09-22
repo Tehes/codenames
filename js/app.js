@@ -5,14 +5,17 @@ function shuffle(array) {
     while (currentIndex !== 0) {
         const randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex],
+            array[currentIndex],
+        ];
     }
     return array;
 }
 
 /* -------------------- Variables -------------------- */
 
-import { wordList } from './words.js';
+import { wordList } from "./words.js";
 let words = wordList;
 let mode = "competitive"; // cooperative or competitive
 let suddenDeath;
@@ -22,15 +25,27 @@ const gameGrid = document.querySelector("#GameGrid");
 const cards = document.querySelectorAll(".card");
 const modeSwitch = document.querySelector(".segmented-toggle");
 const playerSwitch = document.querySelector("#playerSwitch");
-const leftRadio = document.querySelector('#optionLeft');
-const rightRadio = document.querySelector('#optionRight');
+const leftRadio = document.querySelector("#optionLeft");
+const rightRadio = document.querySelector("#optionRight");
 const scoreLeft = document.querySelector("#scoreLeft");
 const scoreRight = document.querySelector("#scoreRight");
 const leftCounter = scoreLeft.querySelector("span");
 const rightCounter = scoreRight.querySelector("span");
 
-
-let startingTeam, blueCount, redCount, greenCount, greenCounterLeft, greenCounterRight, solved, playedWords, colors, colorsLeft, colorsRight, hash, timeTokens, activePlayer;
+let startingTeam,
+    blueCount,
+    redCount,
+    greenCount,
+    greenCounterLeft,
+    greenCounterRight,
+    solved,
+    playedWords,
+    colors,
+    colorsLeft,
+    colorsRight,
+    hash,
+    timeTokens,
+    activePlayer;
 
 /* -------------------- Functions -------------------- */
 
@@ -60,10 +75,9 @@ function init() {
 
         colors = setColorsWithNoBigClusters();
 
-        hash = generateHash(colors, startingTeam);
-        makeQRCode(hash);
-    }
-    else if (mode === "cooperative") {
+        hash = generateHash(colors);
+        makeQRCode(hash, startingTeam);
+    } else if (mode === "cooperative") {
         activePlayer = shuffle(["left", "right"])[0];
         timeTokens = 9;
         greenCount = 15;
@@ -89,7 +103,7 @@ function init() {
         scoreRight.classList.add("green");
 
         colorsLeft = setColorsWithNoBigClusters();
-        colorsRight;
+        // colorsRight will be set in the do-while loop below
         let matchCount;
         // Wiederhole, bis colorsRight genau 3 übereinstimmende grüne Felder hat
         do {
@@ -132,7 +146,8 @@ function modeSwitchHandler() {
 }
 
 function playerToggleHandler() {
-    const selected = document.querySelector('input[name="activePlayer"]:checked').id;
+    const selected =
+        document.querySelector('input[name="activePlayer"]:checked').id;
     activePlayer = (selected === "optionLeft") ? "left" : "right";
     console.log("Active player switched to: " + activePlayer);
     if (timeTokens > 0) {
@@ -166,9 +181,14 @@ function setColorsWithNoBigClusters() {
         const blueColors = Array.from({ length: 8 }, () => "blue");
         const redColors = Array.from({ length: 8 }, () => "red");
         const neutralColors = Array.from({ length: 7 }, () => "neutral");
-        colors = [...blueColors, ...redColors, ...neutralColors, "black", startingTeam];
-    }
-    else if (mode === "cooperative") {
+        colors = [
+            ...blueColors,
+            ...redColors,
+            ...neutralColors,
+            "black",
+            startingTeam,
+        ];
+    } else if (mode === "cooperative") {
         const greenColors = Array.from({ length: 9 }, () => "green");
         const neutralColors = Array.from({ length: 13 }, () => "neutral");
         const blackColors = Array.from({ length: 3 }, () => "black");
@@ -252,8 +272,7 @@ function setCards() {
     cards.forEach((card, i) => {
         if (mode === "competitive") {
             card.dataset.color = colors[i];
-        }
-        else if (mode === "cooperative") {
+        } else if (mode === "cooperative") {
             card.dataset.coopLeft = colorsLeft[i];
             card.dataset.coopRight = colorsRight[i];
         }
@@ -277,19 +296,20 @@ function generateHash(colorArray) {
 
 function makeQRCode(colors, activePlayer = false) {
     const modal = document.querySelector("#modal");
-    modal.className = "";
+    modal.classList.remove("invisible");
 
     // Erstelle einen Container für den QR-Code
     const qrContainer = document.createElement("div");
-    qrContainer.id = "qrcode";
+    qrContainer.classList.add("qrcode");
     modal.appendChild(qrContainer);
 
     // Erzeuge den QR-Code mit kjua.js
     const qr = window.kjua({
-        text: `http://tehes.github.io/codenames/spymaster.html?color=${colors}&player=${activePlayer}`,
-        render: "svg",      // Ausgabe als SVG für Skalierbarkeit
-        fill: "#333",       // Farbe für die dunklen Module
-        crisp: true         // für scharfe Kanten
+        text:
+            `https://tehes.github.io/codenames/spymaster.html?color=${colors}&player=${activePlayer}`,
+        render: "svg", // Ausgabe als SVG für Skalierbarkeit
+        fill: "#333", // Farbe für die dunklen Module
+        crisp: true, // für scharfe Kanten
         // weitere Optionen können hier hinzugefügt werden
     });
 
@@ -302,7 +322,8 @@ function makeQRCode(colors, activePlayer = false) {
     function deleteQR() {
         const modal = document.querySelector("#modal");
         modal.className = "invisible";
-        document.querySelector("#qrcode").remove();
+        // Remove all elements with class 'qrcode'
+        document.querySelectorAll(".qrcode").forEach((el) => el.remove());
         modal.removeEventListener("click", deleteQR, false);
     }
 }
@@ -333,21 +354,18 @@ function play(ev) {
         }
         if (!activeColor) {
             return;
-        }
-        else if (activeColor === "neutral") {
+        } else if (activeColor === "neutral") {
             if (ev.target.classList.contains("neutral-border")) {
                 ev.target.classList.add(activeColor);
                 ev.target.textContent = "";
-            }
-            else {
+            } else {
                 ev.target.classList.add("neutral-border");
             }
             if (timeTokens === 0) {
                 suddenDeath = true;
             }
             togglePlayerSwitchUI();
-        }
-        else {
+        } else {
             ev.target.classList.add(activeColor);
             ev.target.textContent = "";
             if (activeColor === "green") {
@@ -358,16 +376,17 @@ function play(ev) {
                 }
             }
         }
-
     }
 
     // increment teams count
     if (mode === "competitive") {
-        leftCounter.textContent = document.querySelectorAll("#GameGrid .blue").length;
-        rightCounter.textContent = document.querySelectorAll("#GameGrid .red").length;
-    }
-    else if (mode === "cooperative") {
-        leftCounter.textContent = document.querySelectorAll("#GameGrid .green").length;
+        leftCounter.textContent =
+            document.querySelectorAll("#GameGrid .blue").length;
+        rightCounter.textContent =
+            document.querySelectorAll("#GameGrid .red").length;
+    } else if (mode === "cooperative") {
+        leftCounter.textContent =
+            document.querySelectorAll("#GameGrid .green").length;
     }
 }
 
@@ -375,20 +394,22 @@ function isFinished() {
     if (document.querySelectorAll("#GameGrid .black").length === 1) {
         alert("Spiel beendet");
         solve();
-    }
-    else if (blueCount === document.querySelectorAll("#GameGrid .blue").length) {
+    } else if (
+        blueCount === document.querySelectorAll("#GameGrid .blue").length
+    ) {
         alert("Blau gewinnt");
         solve();
-    }
-    else if (redCount === document.querySelectorAll("#GameGrid .red").length) {
+    } else if (
+        redCount === document.querySelectorAll("#GameGrid .red").length
+    ) {
         alert("Rot gewinnt");
         solve();
-    }
-    else if (greenCount === document.querySelectorAll("#GameGrid .green").length) {
+    } else if (
+        greenCount === document.querySelectorAll("#GameGrid .green").length
+    ) {
         alert("Ihr habt gewonnen!");
         solve();
-    }
-    else if (suddenDeath === true) {
+    } else if (suddenDeath === true) {
         alert("Ihr habt verloren!");
         solve();
     }
@@ -416,7 +437,14 @@ function reset() {
     gameGrid.removeEventListener("click", play);
 
     cards.forEach((card) => {
-        card.classList.remove("blue", "red", "black", "neutral", "green", "neutral-border");
+        card.classList.remove(
+            "blue",
+            "red",
+            "black",
+            "neutral",
+            "green",
+            "neutral-border",
+        );
     });
 
     playedWords = words.splice(0, 25);
@@ -426,7 +454,7 @@ function reset() {
 
 window.codenames = {
     init,
-    solve
+    solve,
 };
 
 window.codenames.init();
